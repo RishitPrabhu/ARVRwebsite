@@ -1,6 +1,10 @@
+import Navbar from "../components/navbar";
+
 export default function MembersPage(){
     return (
-<section className="page" id="page-members">
+      <div className="">
+        <Navbar/>
+        <section className="page visible" id="page-members">
   <div className="wrap">
     <div className="page-head">
       <span className="hud">Members</span>
@@ -31,5 +35,6 @@ export default function MembersPage(){
   </div>
 </section>
 
+      </div>
     );
 }

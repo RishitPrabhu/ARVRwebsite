@@ -1,9 +1,11 @@
-
+import Navbar from "../components/navbar";
 
 export default function ContactUS()
 {
     return(
-<section className="page" id="page-contact">
+      <div className="">
+        <Navbar/>
+        <section className="page visible" id="page-contact">
   <div className="wrap">
     <div className="page-head">
       <span className="hud">Contact Us</span>
@@ -62,5 +64,6 @@ export default function ContactUS()
     </div>
   </div>
 </section>
+      </div>
     );
 }

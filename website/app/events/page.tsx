@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from "../components/navbar";
 
 
 
@@ -13,7 +13,9 @@ export default function EventsPage(){
     };
 
     return (
-<section className="page" id="page-events">
+      <div className="">
+        <Navbar/>
+        <section className="page visible" id="page-events">
   <div className="wrap events-wrap">
     <div className="page-head">
       <span className="hud">Events</span>
@@ -79,5 +81,6 @@ export default function EventsPage(){
   </div>
 </section>
 
+      </div>
     );
 }

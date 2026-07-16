@@ -1,8 +1,10 @@
-
+import Navbar from "../components/navbar";
 
 export default function AboutUS(){
     return (
-<section className="page" id="page-about">
+      <div className="">
+        <Navbar/>
+        <section className="page visible" id="page-about">
   <div className="wrap">
     <div className="page-head">
       <span className="hud">About Us</span>
@@ -55,5 +57,6 @@ export default function AboutUS(){
   </div>
 </section>
 
+      </div>
     );
 }

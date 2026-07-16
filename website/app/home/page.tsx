@@ -1,10 +1,12 @@
 import Link from 'next/link';
-
+import Navbar from '../components/navbar';
 
 
 export default function HomePage(){
     return(
-<section className="page visible" id="page-home">
+      <div className="">
+        <Navbar/>
+        <section className="page visible" id="page-home">
   <div id="hero">
     <canvas id="three-canvas"></canvas>
     <div className="hero-frame"><i></i><i></i><i></i><i></i></div>
@@ -90,5 +92,6 @@ export default function HomePage(){
     </div>
   </div>
 </section>
+      </div>
     );
 }

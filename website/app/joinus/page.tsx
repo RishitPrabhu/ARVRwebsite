@@ -1,6 +1,10 @@
+import Navbar from "../components/navbar";
+
 export default function JoinUs(){
     return(
-<section className="page" id="page-join">
+<div className="">
+  <Navbar/>
+  <section className="page visible" id="page-join">
   <div className="wrap">
     <div className="page-head">
       <span className="hud">Join the Club</span>
@@ -67,6 +71,7 @@ export default function JoinUs(){
     </div>
   </div>
 </section>
+</div>
 
     );
 }

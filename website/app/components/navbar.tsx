@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from 'next/link';
 
-import HomePage from "../pages/HomePage";
-import AboutUS from "../pages/AboutUsPage";
-import MembersPage from "../pages/MembersPage";
-import ProjectsPage from "../pages/ProjectsPage";
-import EventsPage from "../pages/Events/EventsPage";
-import ContactUS from "../pages/ContactUSPage";
-import JoinUs from "../pages/JoinUS";
+import HomePage from "../home/page";
+import AboutUS from "../aboutus/page";
+import MembersPage from "../members/page";
+import ProjectsPage from "../projects/page";
+import EventsPage from "../events/page";
+import ContactUS from "../contactus/page";
+import JoinUs from "../joinus/page";
 
 
 export default function Navbar() {
@@ -22,12 +22,15 @@ export default function Navbar() {
   </div>
   <button id="menuBtn" aria-label="Toggle menu">MENU</button>
   <ul className="nav-links" id="navLinks">
-    <li><Link href="/">Home</Link></li>
-    <li><Link href="/Events/EventsPage">Events</Link></li>
-    <li><Link href="/">Members</Link></li>
-    <li><Link href="/">Projects</Link></li>
-    <li><Link href="/">Contact Us</Link></li>
-    <li><Link href="/">Join</Link></li>
+    <li><Link href="/home">Home</Link></li>
+    <li><Link href="/aboutus">About Us</Link></li>
+    <li><Link href="/events">Events</Link></li>
+    <li><Link href="/members">Members</Link></li>
+    <li><Link href="/projects">Projects</Link></li>
+    <li><Link href="/contactus">Contact Us</Link></li>
+    <li><Link href="/joinus">Join</Link></li>
+    
+    <li><Link href="/test">Test</Link></li>
   </ul>
 </nav>
   );
