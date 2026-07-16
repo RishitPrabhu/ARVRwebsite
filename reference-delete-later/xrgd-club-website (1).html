@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XRGD — AR/VR & Game Development Club | Symbiosis Institute of Technology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#07080F;
+  --panel:#0E1124;
+  --panel-2:#131737;
+  --line:rgba(140,150,200,.18);
+  --ink:#E9ECFA;
+  --dim:#9BA2C8;
+  --cyan:#4DE8FF;
+  --magenta:#FF4DA6;
+  --amber:#FFC24D;
+  --radius:14px;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+::selection{background:var(--magenta);color:#fff}
+
+/* ---------- NAV ---------- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;height:64px;
+  background:rgba(7,8,15,.72);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.brand .mark{
+  width:34px;height:34px;border:2px solid var(--cyan);border-radius:8px;
+  display:grid;place-items:center;font-family:var(--mono);font-size:11px;
+  color:var(--cyan);position:relative;
+}
+.brand .mark::after{
+  content:"";position:absolute;inset:-2px;border:2px solid var(--magenta);
+  border-radius:8px;transform:translate(3px,3px);z-index:-1;opacity:.7;
+}
+.brand b{font-size:15px;letter-spacing:.04em}
+.brand small{display:block;font-family:var(--mono);font-size:9.5px;color:var(--dim);letter-spacing:.08em}
+.nav-links{display:flex;gap:4px;list-style:none}
+.nav-links a{
+  display:block;padding:8px 14px;border-radius:8px;
+  color:var(--dim);text-decoration:none;font-size:13.5px;font-weight:500;
+  letter-spacing:.03em;transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a.active{color:var(--cyan);background:rgba(77,232,255,.08)}
+.nav-links a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:2px;
+}
+#menuBtn{display:none;background:none;border:1px solid var(--line);color:var(--ink);
+  border-radius:8px;padding:7px 12px;font-family:var(--mono);font-size:12px;cursor:pointer}
+
+/* ---------- PAGES ---------- */
+.page{display:none;min-height:100vh;padding-top:64px;animation:pageIn .45s ease}
+.page.visible{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+.wrap{max-width:1140px;margin:0 auto;padding:0 28px}
+
+/* HUD label — signature utility */
+.hud{
+  font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--cyan);
+  display:inline-flex;align-items:center;gap:10px;
+}
+.hud::before{content:"";width:26px;height:1px;background:var(--cyan)}
+
+h1,h2,h3{font-weight:700;letter-spacing:-.01em}
+.page-head{padding:84px 0 30px}
+.page-head h1{font-size:clamp(34px,5vw,54px);margin-top:14px}
+.page-head p{max-width:640px;color:var(--dim);margin-top:12px}
+
+/* chromatic aberration on display text */
+.chroma{position:relative;display:inline-block}
+.chroma::before,.chroma::after{
+  content:attr(data-text);position:absolute;inset:0;pointer-events:none;
+}
+.chroma::before{color:var(--cyan);transform:translate(-2.5px,0);opacity:.55;mix-blend-mode:screen}
+.chroma::after{color:var(--magenta);transform:translate(2.5px,0);opacity:.55;mix-blend-mode:screen}
+
+/* ---------- HERO ---------- */
+#hero{position:relative;height:calc(100vh - 64px);min-height:600px;display:flex;align-items:center}
+#three-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-inner{position:relative;z-index:2;width:100%}
+.hero-frame{
+  position:absolute;inset:26px;z-index:1;pointer-events:none;
+}
+.hero-frame i{position:absolute;width:30px;height:30px;border:2px solid rgba(77,232,255,.55)}
+.hero-frame i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0}
+.hero-frame i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0}
+.hero-frame i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0}
+.hero-frame i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0}
+.hero-telemetry{
+  position:absolute;bottom:40px;right:48px;z-index:2;text-align:right;
+  font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.12em;
+  line-height:2;
+}
+.hero-telemetry span{color:var(--cyan)}
+.hero-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--magenta);text-transform:uppercase}
+#hero h1{
+  font-size:clamp(44px,7.4vw,96px);line-height:1.02;margin:18px 0 22px;
+  text-wrap:balance;
+}
+#hero h1 .alt{color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+.hero-sub{max-width:560px;color:var(--dim);font-size:17px}
+.hero-cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:13px 24px;border-radius:10px;font-family:var(--sans);
+  font-size:14.5px;font-weight:600;letter-spacing:.02em;cursor:pointer;
+  text-decoration:none;transition:transform .15s,box-shadow .2s,background .2s;
+  border:0;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--cyan);color:#04141a;box-shadow:0 0 26px rgba(77,232,255,.35)}
+.btn-primary:hover{box-shadow:0 0 40px rgba(77,232,255,.55)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.scroll-hint{
+  position:absolute;bottom:42px;left:50%;transform:translateX(-50%);z-index:2;
+  font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--dim);
+  animation:bob 2.4s ease-in-out infinite;
+}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+
+/* ---------- UPCOMING EVENT BANNER (home) ---------- */
+.upcoming{padding:90px 0}
+.upcoming-card{
+  position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:34px;align-items:center;
+  background:linear-gradient(120deg,var(--panel) 0%,var(--panel-2) 100%);
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:36px 40px;overflow:hidden;
+}
+.upcoming-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--magenta));
+}
+.date-block{
+  text-align:center;border:1px solid var(--line);border-radius:12px;
+  padding:16px 22px;background:rgba(7,8,15,.5);min-width:108px;
+}
+.date-block .d{font-size:38px;font-weight:700;color:var(--cyan);line-height:1}
+.date-block .m{font-family:var(--mono);font-size:11px;letter-spacing:.25em;color:var(--dim);margin-top:6px}
+.upcoming-card h3{font-size:26px;margin:6px 0 8px}
+.upcoming-card p{color:var(--dim);font-size:14.5px;max-width:520px}
+.tag{
+  display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;padding:4px 10px;border-radius:99px;
+  border:1px solid var(--magenta);color:var(--magenta);
+}
+.countdown{display:flex;gap:14px}
+.cd-unit{text-align:center;min-width:54px}
+.cd-unit .n{font-family:var(--mono);font-size:26px;color:var(--ink);background:rgba(7,8,15,.6);
+  border:1px solid var(--line);border-radius:8px;padding:8px 4px}
+.cd-unit .l{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--dim);margin-top:6px;text-transform:uppercase}
+
+/* ---------- HOME PILLARS ---------- */
+.pillars{padding:30px 0 110px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:38px}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:28px;transition:transform .2s,border-color .2s;
+}
+.card:hover{transform:translateY(-4px);border-color:rgba(77,232,255,.45)}
+.card .glyph{font-size:26px;margin-bottom:14px}
+.card h3{font-size:18px;margin-bottom:8px}
+.card p{color:var(--dim);font-size:14px}
+.stats-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:70px;
+}
+.stat{background:var(--panel);padding:26px;text-align:center}
+.stat .n{font-size:32px;font-weight:700;color:var(--cyan)}
+.stat .n em{color:var(--magenta);font-style:normal}
+.stat .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-top:4px}
+
+/* ---------- ABOUT ---------- */
+.about-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;padding-bottom:40px}
+.about-grid p{color:var(--dim);margin-bottom:18px}
+.about-grid p b{color:var(--ink)}
+.vision-box{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:30px;height:fit-content;position:sticky;top:96px;
+}
+.vision-box h3{color:var(--cyan);font-size:15px;font-family:var(--mono);letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px}
+.vision-box+.vision-box{margin-top:20px}
+.vision-box p{color:var(--dim);font-size:14.5px}
+.domain-list{list-style:none;margin-top:26px}
+.domain-list li{
+  display:flex;gap:14px;padding:16px 0;border-bottom:1px dashed var(--line);
+  color:var(--dim);font-size:14.5px;
+}
+.domain-list li b{color:var(--ink);min-width:170px}
+.domain-list li code{font-family:var(--mono);color:var(--magenta);font-size:12px}
+.timeline{padding:60px 0 110px}
+.tl-item{display:grid;grid-template-columns:120px 1fr;gap:30px;padding:22px 0;border-left:1px solid var(--line);margin-left:8px;padding-left:34px;position:relative}
+.tl-item::before{content:"";position:absolute;left:-5px;top:32px;width:9px;height:9px;border-radius:50%;background:var(--magenta);box-shadow:0 0 12px var(--magenta)}
+.tl-item .yr{font-family:var(--mono);color:var(--cyan);font-size:14px}
+.tl-item p{color:var(--dim);font-size:14.5px}
+.tl-item h4{margin-bottom:4px}
+
+/* ---------- MEMBERS ---------- */
+.member-section{margin-bottom:64px}
+.member-section>.hud{margin-bottom:26px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.member{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px;text-align:center;transition:transform .2s,border-color .2s;
+}
+.member:hover{transform:translateY(-4px);border-color:rgba(255,77,166,.5)}
+.avatar{
+  width:78px;height:78px;border-radius:50%;margin:0 auto 16px;
+  display:grid;place-items:center;font-weight:700;font-size:24px;color:#04141a;
+  background:conic-gradient(from 200deg,var(--cyan),var(--magenta),var(--cyan));
+}
+.member h4{font-size:16px}
+.member .role{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase;margin:6px 0 10px}
+.member .bio{font-size:13px;color:var(--dim)}
+.member.faculty .avatar{background:conic-gradient(from 200deg,var(--amber),var(--magenta),var(--amber))}
+.member.faculty .photo-ring{background:conic-gradient(from 200deg,var(--amber),var(--magenta),var(--amber))}
+
+/* ---------- PROJECTS ---------- */
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding-bottom:110px}
+.proj{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,border-color .2s;
+}
+.proj:hover{transform:translateY(-5px);border-color:rgba(77,232,255,.45)}
+.proj-thumb{
+  height:150px;display:grid;place-items:center;font-size:44px;
+  border-bottom:1px solid var(--line);position:relative;overflow:hidden;
+}
+.proj-thumb::before{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,transparent 0 3px,rgba(77,232,255,.05) 3px 4px)}
+.t1{background:radial-gradient(circle at 30% 30%,rgba(77,232,255,.25),transparent 70%),var(--panel-2)}
+.t2{background:radial-gradient(circle at 70% 30%,rgba(255,77,166,.25),transparent 70%),var(--panel-2)}
+.t3{background:radial-gradient(circle at 50% 70%,rgba(255,194,77,.22),transparent 70%),var(--panel-2)}
+.proj-body{padding:24px;display:flex;flex-direction:column;gap:10px;flex:1}
+.proj-body h3{font-size:17.5px}
+.proj-body p{color:var(--dim);font-size:13.5px;flex:1}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:4px 9px;border-radius:6px;
+  background:rgba(77,232,255,.08);color:var(--cyan);border:1px solid rgba(77,232,255,.25)}
+.status{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.status.live{color:#5BFF8A}.status.dev{color:var(--amber)}.status.rnd{color:var(--magenta)}
+
+/* ---------- EVENTS ---------- */
+.event-row{
+  display:grid;grid-template-columns:110px 1fr auto;gap:30px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px 30px;margin-bottom:18px;transition:border-color .2s,transform .2s;
+}
+.event-row:hover{border-color:rgba(77,232,255,.4);transform:translateX(4px)}
+.event-row.featured{border-color:var(--magenta);box-shadow:0 0 34px rgba(255,77,166,.15)}
+.event-row h3{font-size:19px;margin-bottom:5px}
+.event-row p{color:var(--dim);font-size:14px}
+.event-meta{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.1em;margin-top:8px}
+.event-meta span{color:var(--cyan)}
+.events-wrap{padding-bottom:110px}
+.events-wrap .hud{margin:44px 0 22px;display:flex}
+
+/* ---------- CONTACT ---------- */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:46px;padding-bottom:110px}
+.contact-info .row{display:flex;gap:16px;padding:18px 0;border-bottom:1px dashed var(--line)}
+.contact-info .ic{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.contact-info b{display:block;font-size:14.5px}
+.contact-info span{color:var(--dim);font-size:13.5px}
+form{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:34px}
+.field{margin-bottom:20px}
+.field label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.field input,.field textarea,.field select{
+  width:100%;background:rgba(7,8,15,.6);border:1px solid var(--line);border-radius:9px;
+  padding:12px 14px;color:var(--ink);font-family:var(--sans);font-size:14.5px;
+  transition:border-color .2s;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--cyan)}
+.field textarea{resize:vertical;min-height:120px}
+#formMsg{display:none;margin-top:16px;font-family:var(--mono);font-size:12.5px;color:#5BFF8A;letter-spacing:.05em}
+
+/* ---------- JOIN PAGE ---------- */
+.join-link{border:1px solid var(--magenta);color:var(--magenta)!important;margin-left:6px}
+.join-link:hover,.join-link.active{background:rgba(255,77,166,.12)!important;color:var(--magenta)!important}
+.join-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:46px;padding-bottom:110px}
+.perk{display:flex;gap:16px;padding:18px 0;border-bottom:1px dashed var(--line)}
+.perk .ic{width:42px;height:42px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.perk b{display:block;font-size:14.5px}
+.perk span{color:var(--dim);font-size:13.5px}
+.steps{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+.steps h3{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+.steps ol{margin-left:18px;color:var(--dim);font-size:14px}
+.steps ol li{padding:5px 0}
+.steps ol li b{color:var(--ink)}
+.check-row{display:flex;flex-wrap:wrap;gap:10px}
+.check-row label{
+  display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;
+  padding:9px 14px;font-size:13.5px;color:var(--dim);cursor:pointer;
+  font-family:var(--sans);text-transform:none;letter-spacing:0;margin:0;transition:border-color .2s,color .2s;
+}
+.check-row label:has(input:checked){border-color:var(--cyan);color:var(--cyan);background:rgba(77,232,255,.07)}
+.check-row input{width:auto;accent-color:var(--cyan)}
+
+/* ---------- MEMBER PHOTOS & PROFILE ---------- */
+.photo{
+  width:92px;height:92px;border-radius:50%;margin:0 auto 16px;display:block;
+  object-fit:cover;background:var(--panel-2);
+  border:2px solid transparent;
+  background-clip:padding-box;position:relative;
+}
+.photo-ring{
+  width:98px;height:98px;border-radius:50%;margin:0 auto 16px;padding:3px;
+  background:conic-gradient(from 200deg,var(--cyan),var(--magenta),var(--cyan));
+  display:grid;place-items:center;
+}
+.photo-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;background:var(--panel-2)}
+.member{cursor:pointer}
+.member .view-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--magenta);margin-top:12px;opacity:0;transition:opacity .2s;text-transform:uppercase}
+.member:hover .view-tag{opacity:1}
+.profile-back{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;
+  letter-spacing:.14em;color:var(--dim);text-decoration:none;margin-top:50px;transition:color .2s;
+}
+.profile-back:hover{color:var(--cyan)}
+.profile-card{
+  display:grid;grid-template-columns:300px 1fr;gap:0;margin:26px 0 40px;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+}
+.profile-left{
+  background:linear-gradient(160deg,var(--panel-2),var(--panel));
+  border-right:1px solid var(--line);padding:40px 30px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.profile-left .photo-ring{width:170px;height:170px;margin-bottom:10px}
+.profile-left h2{font-size:24px;line-height:1.2}
+.profile-left .role{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--cyan);text-transform:uppercase}
+.profile-stats{width:100%;margin-top:22px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.profile-stats .ps{background:var(--panel);padding:11px 14px;display:flex;justify-content:space-between;font-size:13px}
+.profile-stats .ps b{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:500}
+.profile-right{padding:40px}
+.profile-right .hud{margin-bottom:14px}
+.quote{
+  position:relative;font-size:21px;line-height:1.5;font-weight:500;
+  padding:6px 0 6px 26px;border-left:3px solid var(--magenta);margin-bottom:34px;
+}
+.quote::before{content:"“";position:absolute;left:-4px;top:-26px;font-size:64px;color:var(--magenta);opacity:.35}
+.profile-bio{color:var(--dim);font-size:15px;margin-bottom:34px}
+.proj-mini{display:grid;gap:12px;margin-top:6px}
+.proj-mini .pm{
+  display:grid;grid-template-columns:44px 1fr auto;gap:16px;align-items:center;
+  background:rgba(7,8,15,.45);border:1px solid var(--line);border-radius:10px;padding:14px 18px;
+}
+.proj-mini .pm .g{font-size:22px;text-align:center}
+.proj-mini .pm h4{font-size:15px}
+.proj-mini .pm p{font-size:12.5px;color:var(--dim)}
+.profile-skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+@media(max-width:900px){
+  .join-grid{grid-template-columns:1fr}
+  .profile-card{grid-template-columns:1fr}
+  .profile-left{border-right:0;border-bottom:1px solid var(--line)}
+}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--line);padding:42px 0;background:var(--panel)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.foot p{color:var(--dim);font-size:13px}
+.foot .links{display:flex;gap:18px}
+.foot .links a{color:var(--dim);text-decoration:none;font-size:13px;transition:color .2s}
+.foot .links a:hover{color:var(--cyan)}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:980px){
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .proj-grid,.grid-3{grid-template-columns:repeat(2,1fr)}
+  .about-grid,.contact-grid{grid-template-columns:1fr}
+  .vision-box{position:static}
+  .upcoming-card{grid-template-columns:1fr;text-align:left}
+  .countdown{justify-content:flex-start}
+  .stats-strip{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:680px){
+  .nav-links{
+    display:none;position:fixed;top:64px;left:0;right:0;flex-direction:column;
+    background:rgba(7,8,15,.97);padding:16px 22px;border-bottom:1px solid var(--line);
+  }
+  .nav-links.open{display:flex}
+  #menuBtn{display:block}
+  .proj-grid,.grid-3,.grid-4{grid-template-columns:1fr}
+  .event-row{grid-template-columns:1fr;gap:14px}
+  .hero-telemetry{display:none}
+  .tl-item{grid-template-columns:1fr;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand" data-nav="home">
+    <div class="mark">XR</div>
+    <div>
+      <b>XRGD CLUB</b>
+      <small>SYMBIOSIS INSTITUTE OF TECHNOLOGY</small>
+    </div>
+  </div>
+  <button id="menuBtn" aria-label="Toggle menu">MENU</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#home" data-nav="home" class="active">Home</a></li>
+    <li><a href="#about" data-nav="about">About Us</a></li>
+    <li><a href="#members" data-nav="members">Members</a></li>
+    <li><a href="#projects" data-nav="projects">Projects</a></li>
+    <li><a href="#events" data-nav="events">Events</a></li>
+    <li><a href="#contact" data-nav="contact">Contact Us</a></li>
+    <li><a href="#join" data-nav="join" class="join-link">Join</a></li>
+  </ul>
+</nav>
+
+<!-- ================= HOME ================= -->
+<section class="page visible" id="page-home">
+  <div id="hero">
+    <canvas id="three-canvas"></canvas>
+    <div class="hero-frame"><i></i><i></i><i></i><i></i></div>
+    <div class="hero-telemetry">
+      FOV <span>110°</span> · IPD <span>63.5mm</span><br>
+      RENDER <span>WEBGL · 60FPS</span><br>
+      SESSION <span id="heroClock">--:--:--</span>
+    </div>
+    <div class="wrap hero-inner">
+      <div class="hero-eyebrow">// AR · VR · Game Development</div>
+      <h1>
+        <span class="chroma" data-text="BUILD WORLDS.">BUILD WORLDS.</span><br>
+        <span class="alt">BREAK REALITY.</span>
+      </h1>
+      <p class="hero-sub">
+        The official AR/VR &amp; Game Development Club of Symbiosis Institute of Technology, Pune —
+        where students design immersive experiences, ship playable games, and prototype the spatial web.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#join" data-nav="join">Join the Club →</a>
+        <a class="btn btn-ghost" href="#projects" data-nav="projects">Explore Projects</a>
+      </div>
+    </div>
+    <div class="scroll-hint">SCROLL ▾</div>
+  </div>
+
+  <!-- Upcoming Event -->
+  <div class="upcoming">
+    <div class="wrap">
+      <span class="hud">Upcoming Event</span>
+      <div class="upcoming-card" style="margin-top:26px">
+        <div class="date-block">
+          <div class="d">28</div>
+          <div class="m">JUN 2026</div>
+        </div>
+        <div>
+          <span class="tag">Flagship · 36-Hour Jam</span>
+          <h3>RealityJam 2026 — Annual Game Jam</h3>
+          <p>36 hours. One theme, revealed on the spot. Teams of 2–4 build a playable game or XR prototype
+             from scratch — Unity, Unreal, Godot, or WebXR. Open to all SIT students, beginners welcome.
+             Venue: Innovation Lab, SIT Lavale Campus.</p>
+        </div>
+        <div>
+          <div class="countdown" id="countdown" aria-label="Countdown to RealityJam 2026">
+            <div class="cd-unit"><div class="n" id="cdD">--</div><div class="l">Days</div></div>
+            <div class="cd-unit"><div class="n" id="cdH">--</div><div class="l">Hrs</div></div>
+            <div class="cd-unit"><div class="n" id="cdM">--</div><div class="l">Min</div></div>
+            <div class="cd-unit"><div class="n" id="cdS">--</div><div class="l">Sec</div></div>
+          </div>
+          <a class="btn btn-primary" style="margin-top:18px;width:100%;justify-content:center" href="#events" data-nav="events">Register Interest</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pillars -->
+  <div class="pillars">
+    <div class="wrap">
+      <span class="hud">What We Do</span>
+      <h2 style="font-size:clamp(28px,4vw,40px);margin-top:14px">Three tracks, one playground.</h2>
+      <div class="grid-3">
+        <div class="card">
+          <div class="glyph">🕶️</div>
+          <h3>Virtual Reality</h3>
+          <p>Full-immersion experiences on Quest and PCVR — locomotion systems, hand tracking, spatial audio, and VR interaction design built in Unity and Unreal.</p>
+        </div>
+        <div class="card">
+          <div class="glyph">📱</div>
+          <h3>Augmented Reality</h3>
+          <p>Marker-based and markerless AR for mobile and web — ARCore, ARKit, WebXR, and campus-scale AR navigation and visualisation projects.</p>
+        </div>
+        <div class="card">
+          <div class="glyph">🎮</div>
+          <h3>Game Development</h3>
+          <p>From pixel-art platformers to multiplayer prototypes — gameplay programming, level design, shaders, game art, and publishing on itch.io.</p>
+        </div>
+      </div>
+      <div class="stats-strip">
+        <div class="stat"><div class="n">120<em>+</em></div><div class="l">Active Members</div></div>
+        <div class="stat"><div class="n">25<em>+</em></div><div class="l">Projects Shipped</div></div>
+        <div class="stat"><div class="n">14</div><div class="l">Events Hosted</div></div>
+        <div class="stat"><div class="n">6</div><div class="l">Hackathon Wins</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="page" id="page-about">
+  <div class="wrap">
+    <div class="page-head">
+      <span class="hud">About Us</span>
+      <h1><span class="chroma" data-text="Who we are">Who we are</span></h1>
+      <p>A student-run technical club at Symbiosis Institute of Technology, Pune, dedicated to immersive technologies and interactive media.</p>
+    </div>
+    <div class="about-grid">
+      <div>
+        <p>The <b>AR/VR &amp; Game Development Club (XRGD)</b> was founded in 2022 by a small group of students who
+        wanted a place on campus to build games and experiment with headsets — not just talk about them.
+        Today we are one of the most active technical clubs under <b>Symbiosis Institute of Technology (SIT), Pune</b>,
+        operating under the umbrella of Symbiosis International (Deemed University).</p>
+        <p>We run weekly build sessions, semester-long project teams, workshops on engines and tooling,
+        and flagship events like <b>RealityJam</b>, our annual 36-hour game jam. Members work across the full
+        pipeline — programming, 3D art, sound, UX for spatial interfaces, and playtesting.</p>
+        <p>No prior experience is required to join. If you can attend the onboarding workshop and commit to
+        one project a semester, you're in. We pair every newcomer with a senior mentor for their first build.</p>
+        <ul class="domain-list">
+          <li><b>Engines &amp; Frameworks</b><span>Unity · Unreal Engine 5 · Godot · <code>three.js / WebXR</code></span></li>
+          <li><b>AR Toolkits</b><span>ARCore · ARKit · Vuforia · 8th Wall · <code>AR.js</code></span></li>
+          <li><b>Hardware Lab</b><span>Meta Quest 3 · Quest 2 units · Leap Motion · 3D printers (via MakerSpace)</span></li>
+          <li><b>Art &amp; Audio</b><span>Blender · Substance · Aseprite · FMOD · <code>FL Studio</code></span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="vision-box">
+          <h3>Mission</h3>
+          <p>To give every SIT student the skills, hardware access, and team experience needed to ship real interactive and immersive products before they graduate.</p>
+        </div>
+        <div class="vision-box">
+          <h3>Vision</h3>
+          <p>To make SIT Pune a recognised student hub for XR and game development in India — a campus where the next generation of spatial computing is prototyped.</p>
+        </div>
+        <div class="vision-box">
+          <h3>Values</h3>
+          <p>Build in public. Playtest early. Teach what you learn. Credit every contributor. Finish the game.</p>
+        </div>
+      </div>
+    </div>
+    <div class="timeline">
+      <span class="hud">Our Journey</span>
+      <div style="margin-top:30px">
+        <div class="tl-item"><div class="yr">2022</div><div><h4>Founded</h4><p>Started as a 12-member game dev interest group with one shared Quest 2.</p></div></div>
+        <div class="tl-item"><div class="yr">2023</div><div><h4>Official club status</h4><p>Recognised as an official technical club under SIT. First RealityJam held with 18 teams.</p></div></div>
+        <div class="tl-item"><div class="yr">2024</div><div><h4>XR Lab access</h4><p>Secured dedicated lab hours and new headsets. Campus AR Navigator pilot launched.</p></div></div>
+        <div class="tl-item"><div class="yr">2025</div><div><h4>First publications</h4><p>Two member projects showcased at national-level student tech fests; 25+ projects shipped overall.</p></div></div>
+        <div class="tl-item"><div class="yr">2026</div><div><h4>Scaling up</h4><p>120+ members across three tracks. RealityJam 2026 opens to all SIT departments.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MEMBERS ================= -->
+<section class="page" id="page-members">
+  <div class="wrap">
+    <div class="page-head">
+      <span class="hud">Members</span>
+      <h1><span class="chroma" data-text="The crew">The crew</span></h1>
+      <p>Core team for the 2025–26 academic year. Click any member to view their full profile. Names and photos are placeholders — swap in your real team.</p>
+    </div>
+
+    <div class="member-section">
+      <span class="hud" style="--c:var(--amber)">Faculty In-Charge</span>
+      <div class="grid-4" id="facultyGrid"></div>
+    </div>
+
+    <div class="member-section">
+      <span class="hud">Core Committee</span>
+      <div class="grid-4" id="coreGrid"></div>
+    </div>
+
+    <div class="member-section" style="padding-bottom:60px">
+      <span class="hud">Join Us</span>
+      <div class="card" style="margin-top:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+        <div>
+          <h3>Want your name on this page?</h3>
+          <p>Recruitment opens at the start of every semester — and jam participation counts as a tryout.</p>
+        </div>
+        <a class="btn btn-primary" href="#join" data-nav="join">Apply Now →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section class="page" id="page-projects">
+  <div class="wrap">
+    <div class="page-head">
+      <span class="hud">Projects</span>
+      <h1><span class="chroma" data-text="Things we shipped">Things we shipped</span></h1>
+      <p>A selection of member-built games, AR tools, and VR experiences. Most are open source on the club GitHub.</p>
+    </div>
+    <div class="proj-grid">
+      <div class="proj">
+        <div class="proj-thumb t1">🧭</div>
+        <div class="proj-body">
+          <div class="status live">● Live on campus</div>
+          <h3>Campus AR Navigator</h3>
+          <p>Markerless AR wayfinding for the SIT Lavale campus — point your phone and follow floating arrows to any lab, department, or canteen.</p>
+          <div class="chip-row"><span class="chip">ARCore</span><span class="chip">Unity</span><span class="chip">Geospatial API</span></div>
+        </div>
+      </div>
+      <div class="proj">
+        <div class="proj-thumb t2">🫀</div>
+        <div class="proj-body">
+          <div class="status dev">● In development</div>
+          <h3>AnatomyVR</h3>
+          <p>A VR study tool that lets students walk around and disassemble life-size 3D anatomical models, built with the Biosciences department.</p>
+          <div class="chip-row"><span class="chip">Quest 3</span><span class="chip">Unity XR</span><span class="chip">Hand Tracking</span></div>
+        </div>
+      </div>
+      <div class="proj">
+        <div class="proj-thumb t3">🛰️</div>
+        <div class="proj-body">
+          <div class="status live">● Playable on itch.io</div>
+          <h3>Orbital Decay</h3>
+          <p>2.5D physics platformer set on a failing space station — winner of RealityJam 2025, polished and published post-jam by the original team.</p>
+          <div class="chip-row"><span class="chip">Godot</span><span class="chip">Pixel Art</span><span class="chip">FMOD</span></div>
+        </div>
+      </div>
+      <div class="proj">
+        <div class="proj-thumb t2">🃏</div>
+        <div class="proj-body">
+          <div class="status live">● Live demo</div>
+          <h3>HoloDeck Cards</h3>
+          <p>A WebAR trading-card battler — scan printed cards and watch creatures rise off the table and fight. Runs in the browser, no app install.</p>
+          <div class="chip-row"><span class="chip">WebXR</span><span class="chip">three.js</span><span class="chip">8th Wall</span></div>
+        </div>
+      </div>
+      <div class="proj">
+        <div class="proj-thumb t1">🏎️</div>
+        <div class="proj-body">
+          <div class="status dev">● In development</div>
+          <h3>Velocity LAN</h3>
+          <p>A 4-player split-screen and LAN arcade racer designed for the club's game nights — drift physics, item pickups, campus-inspired tracks.</p>
+          <div class="chip-row"><span class="chip">Unreal 5</span><span class="chip">Multiplayer</span><span class="chip">Blender</span></div>
+        </div>
+      </div>
+      <div class="proj">
+        <div class="proj-thumb t3">🧪</div>
+        <div class="proj-body">
+          <div class="status rnd">● Research</div>
+          <h3>GestureForge</h3>
+          <p>An experimental toolkit mapping Leap Motion hand gestures to engine events — letting designers sculpt VR levels with bare hands.</p>
+          <div class="chip-row"><span class="chip">Leap Motion</span><span class="chip">C#</span><span class="chip">Unity Editor</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EVENTS ================= -->
+<section class="page" id="page-events">
+  <div class="wrap events-wrap">
+    <div class="page-head">
+      <span class="hud">Events</span>
+      <h1><span class="chroma" data-text="On the calendar">On the calendar</span></h1>
+      <p>Jams, workshops, demo nights, and speaker sessions — open to all SIT students unless noted.</p>
+    </div>
+
+    <span class="hud">Upcoming</span>
+    <div class="event-row featured">
+      <div class="date-block"><div class="d">28</div><div class="m">JUN 2026</div></div>
+      <div>
+        <span class="tag">Flagship</span>
+        <h3 style="margin-top:8px">RealityJam 2026</h3>
+        <p>Our annual 36-hour game jam. Theme revealed at kickoff; build a game or XR prototype in teams of 2–4. Judged on creativity, playability, and polish.</p>
+        <div class="event-meta">📍 <span>Innovation Lab, SIT Lavale</span> · 🕘 <span>Sat 9:00 AM → Sun 9:00 PM</span> · 🏆 <span>Prize pool + incubation slots</span></div>
+      </div>
+      <button class="btn btn-primary" onclick="alert('Registration form goes here — link your Google Form or campus portal.')">Register</button>
+    </div>
+    <div class="event-row">
+      <div class="date-block"><div class="d">15</div><div class="m">JUL 2026</div></div>
+      <div>
+        <h3>Intro to Unity — Freshers' Workshop</h3>
+        <p>Zero-to-playable in three hours: scenes, physics, scripting basics, and building your first 3D mini-game. Laptops provided in lab.</p>
+        <div class="event-meta">📍 <span>CS Lab 204</span> · 🕔 <span>5:00 PM – 8:00 PM</span> · 🎟 <span>Free, no experience needed</span></div>
+      </div>
+      <button class="btn btn-ghost" onclick="alert('Registration form goes here.')">Register</button>
+    </div>
+    <div class="event-row">
+      <div class="date-block"><div class="d">02</div><div class="m">AUG 2026</div></div>
+      <div>
+        <h3>XR Demo Night #5</h3>
+        <p>Members demo works-in-progress on the club's Quest 3 units; open floor for feedback and playtesting. Snacks on us.</p>
+        <div class="event-meta">📍 <span>XR Lab</span> · 🕕 <span>6:00 PM onwards</span></div>
+      </div>
+      <button class="btn btn-ghost" onclick="alert('Registration form goes here.')">RSVP</button>
+    </div>
+
+    <span class="hud">Past Events</span>
+    <div class="event-row" style="opacity:.75">
+      <div class="date-block"><div class="d">14</div><div class="m">MAR 2026</div></div>
+      <div>
+        <h3>Shader Bootcamp</h3>
+        <p>Two-day deep dive into Shader Graph and HLSL — stylised water, dissolve effects, and toon shading. 60+ attendees.</p>
+        <div class="event-meta">✅ <span>Completed</span> · Materials on club GitHub</div>
+      </div>
+    </div>
+    <div class="event-row" style="opacity:.75">
+      <div class="date-block"><div class="d">31</div><div class="m">JAN 2026</div></div>
+      <div>
+        <h3>Industry Talk: Building for Quest</h3>
+        <p>Guest session with a VR studio engineer on performance budgets, comfort design, and shipping to the Meta Store.</p>
+        <div class="event-meta">✅ <span>Completed</span> · Recording on club YouTube</div>
+      </div>
+    </div>
+    <div class="event-row" style="opacity:.75">
+      <div class="date-block"><div class="d">09</div><div class="m">NOV 2025</div></div>
+      <div>
+        <h3>RealityJam 2025</h3>
+        <p>24 teams, 36 hours, theme "Gravity Optional". Winner Orbital Decay later published on itch.io.</p>
+        <div class="event-meta">✅ <span>Completed</span> · 96 participants</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="page" id="page-contact">
+  <div class="wrap">
+    <div class="page-head">
+      <span class="hud">Contact Us</span>
+      <h1><span class="chroma" data-text="Ping us">Ping us</span></h1>
+      <p>Questions, collaborations, sponsorships, or just want to join — drop a message and a core member will reply within 48 hours.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="row">
+          <div class="ic">📍</div>
+          <div><b>Find us on campus</b><span>XR Lab / Innovation Lab, Symbiosis Institute of Technology, Lavale, Pune, Maharashtra 412115</span></div>
+        </div>
+        <div class="row">
+          <div class="ic">✉️</div>
+          <div><b>Email</b><span>xrgd.club@sitpune.edu.in <i style="color:var(--dim);font-style:normal">(placeholder — replace with your official ID)</i></span></div>
+        </div>
+        <div class="row">
+          <div class="ic">💬</div>
+          <div><b>Discord</b><span>Active build channels, jam teams, and help desks — invite link shared at onboarding.</span></div>
+        </div>
+        <div class="row">
+          <div class="ic">📸</div>
+          <div><b>Socials</b><span>@xrgd.sitpune on Instagram · Club devlogs on YouTube · Projects on GitHub &amp; itch.io</span></div>
+        </div>
+        <div class="row" style="border-bottom:0">
+          <div class="ic">🕘</div>
+          <div><b>Open lab hours</b><span>Tue &amp; Thu, 5–8 PM during semester. Walk in, put on a headset, ask anything.</span></div>
+        </div>
+      </div>
+      <form id="contactForm">
+        <div class="field">
+          <label for="cName">Name</label>
+          <input id="cName" type="text" placeholder="Your full name" required>
+        </div>
+        <div class="field">
+          <label for="cEmail">Email</label>
+          <input id="cEmail" type="email" placeholder="you@sitpune.edu.in" required>
+        </div>
+        <div class="field">
+          <label for="cTopic">I'm reaching out about</label>
+          <select id="cTopic">
+            <option>Joining the club</option>
+            <option>RealityJam 2026</option>
+            <option>Collaboration / sponsorship</option>
+            <option>Project help</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cMsg">Message</label>
+          <textarea id="cMsg" placeholder="Tell us what's on your mind…" required></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Send Message →</button>
+        <p id="formMsg">✓ MESSAGE QUEUED — we'll get back to you within 48 hours.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JOIN ================= -->
+<section class="page" id="page-join">
+  <div class="wrap">
+    <div class="page-head">
+      <span class="hud">Join the Club</span>
+      <h1><span class="chroma" data-text="Press start">Press start</span></h1>
+      <p>Open to every SIT student, every branch, every skill level. Fill the form and we'll invite you to the next onboarding session.</p>
+    </div>
+    <div class="join-grid">
+      <div>
+        <div class="perk"><div class="ic">🕶️</div><div><b>Hardware access</b><span>Quest 3 &amp; Quest 2 units, Leap Motion, and dedicated XR Lab hours every week.</span></div></div>
+        <div class="perk"><div class="ic">🧑‍🏫</div><div><b>Mentored first project</b><span>Every newcomer is paired with a senior member for their first semester build.</span></div></div>
+        <div class="perk"><div class="ic">🏆</div><div><b>Jams &amp; competitions</b><span>Priority slots for RealityJam and sponsored teams for inter-college hackathons.</span></div></div>
+        <div class="perk"><div class="ic">📦</div><div><b>A real portfolio</b><span>Ship at least one playable project per semester, published on the club itch.io &amp; GitHub.</span></div></div>
+        <div class="perk" style="border-bottom:0"><div class="ic">🪪</div><div><b>Your page on this site</b><span>Active members get a profile on the Members page — photo, projects, and all.</span></div></div>
+        <div class="steps">
+          <h3>How recruitment works</h3>
+          <ol>
+            <li><b>Apply</b> with this form (2 minutes, no portfolio needed).</li>
+            <li><b>Onboarding workshop</b> — a hands-on intro session in the lab.</li>
+            <li><b>Mini build</b> — make one tiny thing in 2 weeks with a mentor.</li>
+            <li><b>You're in.</b> Pick a track and join a project team.</li>
+          </ol>
+        </div>
+      </div>
+      <form id="joinForm">
+        <div class="field"><label for="jName">Full name</label><input id="jName" type="text" placeholder="Your full name" required></div>
+        <div class="field"><label for="jEmail">College email</label><input id="jEmail" type="email" placeholder="prn@sitpune.edu.in" required></div>
+        <div class="field"><label for="jPrn">PRN / Roll number</label><input id="jPrn" type="text" placeholder="e.g. 23070123456" required></div>
+        <div class="field"><label for="jBranch">Branch &amp; year</label>
+          <select id="jBranch">
+            <option>Computer Science — 1st year</option>
+            <option>Computer Science — 2nd year</option>
+            <option>Computer Science — 3rd year</option>
+            <option>AI &amp; ML</option>
+            <option>E&amp;TC</option>
+            <option>Mechanical</option>
+            <option>Civil</option>
+            <option>Robotics &amp; Automation</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Tracks you're interested in</label>
+          <div class="check-row">
+            <label><input type="checkbox" checked> Game Development</label>
+            <label><input type="checkbox"> Virtual Reality</label>
+            <label><input type="checkbox"> Augmented Reality</label>
+            <label><input type="checkbox"> 3D Art &amp; Design</label>
+            <label><input type="checkbox"> Audio / Music</label>
+          </div>
+        </div>
+        <div class="field"><label for="jExp">Experience level</label>
+          <select id="jExp">
+            <option>Complete beginner — and that's fine</option>
+            <option>Played with an engine a little</option>
+            <option>Built a small game or demo</option>
+            <option>Shipped projects before</option>
+          </select>
+        </div>
+        <div class="field"><label for="jWhy">Why do you want to join? <span style="color:var(--dim);text-transform:none;letter-spacing:0">(optional)</span></label>
+          <textarea id="jWhy" placeholder="A game you love, a thing you want to build, anything…"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Submit Application →</button>
+        <p id="joinMsg" style="display:none;margin-top:16px;font-family:var(--mono);font-size:12.5px;color:#5BFF8A;letter-spacing:.05em">✓ APPLICATION RECEIVED — check your inbox for the onboarding invite.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MEMBER PROFILE ================= -->
+<section class="page" id="page-member">
+  <div class="wrap">
+    <a class="profile-back" href="#members" data-nav="members">← BACK TO MEMBERS</a>
+    <div id="profileMount"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <p>© 2026 XRGD — AR/VR &amp; Game Development Club, Symbiosis Institute of Technology, Pune.<br>Built by members, for members.</p>
+    <div class="links">
+      <a href="#about" data-nav="about">About</a>
+      <a href="#projects" data-nav="projects">Projects</a>
+      <a href="#events" data-nav="events">Events</a>
+      <a href="#contact" data-nav="contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ---------- MEMBER DATA ---------- */
+const MEMBERS = {
+  'faculty-advisor': {
+    name:'Dr. Faculty Advisor', faculty:true, role:'Faculty Coordinator', age:'—',
+    branch:'Dept. of Computer Science & IT', seed:'FacultyAdvisor', year:'Faculty',
+    bio:'Guides club strategy, lab access, and academic tie-ins. Research interests in HCI and computer graphics.',
+    quote:'Students learn engines fast. What a club teaches is how to finish.',
+    skills:['HCI','Computer Graphics','Research Mentorship'],
+    projects:[
+      {g:'🫀', t:'AnatomyVR', d:'Academic advisor — liaison with the Biosciences department.'},
+      {g:'🏛️', t:'XR Lab Setup', d:'Secured funding and lab hours for the club hardware lab.'}
+    ]
+  },
+  'aarav-rao': {
+    name:'Aarav Rao', role:'President', age:21, branch:'Computer Science', year:'Final year', seed:'AaravRao',
+    bio:'Unity generalist who joined as a fresher in the club\'s first batch. Led the Campus AR Navigator from prototype to campus-wide pilot, and now runs club strategy, partnerships, and the mentorship program.',
+    quote:'Ship the ugly version first. Polish is a reward, not a starting point.',
+    skills:['Unity','C#','ARCore','Project Leadership'],
+    projects:[
+      {g:'🧭', t:'Campus AR Navigator', d:'Project lead — markerless AR wayfinding for SIT Lavale.'},
+      {g:'🛰️', t:'Orbital Decay', d:'Gameplay programming during RealityJam 2025.'},
+      {g:'🏎️', t:'Velocity LAN', d:'Producer — scoping, milestones, and playtest nights.'}
+    ]
+  },
+  'ishita-sharma': {
+    name:'Ishita Sharma', role:'Vice President', age:20, branch:'AI & ML', year:'Third year', seed:'IshitaSharma',
+    bio:'Technical artist working in Unreal Engine 5. Runs the weekly shader study group and owns the club\'s rendering pipeline knowledge base. Bridges the art and programming teams on every major project.',
+    quote:'A good shader is just math wearing makeup.',
+    skills:['Unreal 5','HLSL','Shader Graph','Niagara VFX'],
+    projects:[
+      {g:'🏎️', t:'Velocity LAN', d:'Technical art lead — materials, VFX, and track lighting.'},
+      {g:'🧪', t:'Shader Bootcamp', d:'Designed and taught the two-day workshop curriculum.'}
+    ]
+  },
+  'vihaan-kulkarni': {
+    name:'Vihaan Kulkarni', role:'Tech Lead — VR', age:21, branch:'Computer Science', year:'Third year', seed:'VihaanKulkarni',
+    bio:'Quest developer obsessed with hand-tracking UX and comfort design. Maintains the club\'s shared VR interaction toolkit so every team starts with solid locomotion and grabbing out of the box.',
+    quote:'If the player notices the locomotion, you\'ve already lost them.',
+    skills:['Unity XR','Quest SDK','Hand Tracking','Spatial Audio'],
+    projects:[
+      {g:'🫀', t:'AnatomyVR', d:'Lead developer — interaction system and dissection mechanics.'},
+      {g:'🧪', t:'GestureForge', d:'Co-author of the gesture-to-event mapping toolkit.'}
+    ]
+  },
+  'naina-mehta': {
+    name:'Naina Mehta', role:'Tech Lead — AR', age:20, branch:'E&TC', year:'Third year', seed:'NainaMehta',
+    bio:'WebXR and ARCore specialist who believes the best AR needs no app install. Built the AR campus treasure-hunt that onboarded 200+ freshers, and keeps the club\'s web demos running.',
+    quote:'The browser is the most underrated game console ever made.',
+    skills:['WebXR','three.js','ARCore','8th Wall'],
+    projects:[
+      {g:'🃏', t:'HoloDeck Cards', d:'Project lead — WebAR card battler, browser-only.'},
+      {g:'🧭', t:'Campus AR Navigator', d:'Geospatial anchoring and localisation.'},
+      {g:'🗺️', t:'AR Treasure Hunt', d:'Creator — freshers\' orientation AR game.'}
+    ]
+  },
+  'reyansh-desai': {
+    name:'Reyansh Desai', role:'Game Dev Lead', age:19, branch:'Computer Science', year:'Second year', seed:'ReyanshDesai',
+    bio:'Gameplay programmer and jam veteran — 9 jams entered, 9 games shipped. Runs the game development track\'s weekly build sessions and the post-jam polish pipeline that gets jam games onto itch.io.',
+    quote:'Scope small, then cut that in half. Now you have a game.',
+    skills:['Godot','GDScript','Game Feel','Level Design'],
+    projects:[
+      {g:'🛰️', t:'Orbital Decay', d:'Lead programmer — RealityJam 2025 winner, published on itch.io.'},
+      {g:'🏎️', t:'Velocity LAN', d:'Drift physics and item system.'}
+    ]
+  },
+  'sara-patil': {
+    name:'Sara Patil', role:'Design & Art Lead', age:19, branch:'Computer Science', year:'Second year', seed:'SaraPatil',
+    bio:'3D artist and UI designer who owns the club\'s visual identity — from this website\'s look to every jam poster. Teaches the Blender pipeline and keeps the shared asset library organised.',
+    quote:'Players forgive simple art. They never forgive unclear art.',
+    skills:['Blender','Substance','UI/UX','Pixel Art'],
+    projects:[
+      {g:'🛰️', t:'Orbital Decay', d:'All environment art and the station\'s pixel tileset.'},
+      {g:'🫀', t:'AnatomyVR', d:'3D anatomical model optimisation and texturing.'},
+      {g:'🎨', t:'Club Identity', d:'Designed the XRGD brand, posters, and this website\'s look.'}
+    ]
+  },
+  'kabir-joshi': {
+    name:'Kabir Joshi', role:'Events Head', age:20, branch:'Mechanical', year:'Third year', seed:'KabirJoshi',
+    bio:'The logistics engine behind RealityJam — venues, sponsors, food, judges, and the 3 AM coffee run. Handles inter-college outreach and got the club its first external sponsorships.',
+    quote:'A jam runs on three things: pizza, power strips, and panic.',
+    skills:['Event Ops','Sponsorships','Outreach','Budgeting'],
+    projects:[
+      {g:'🏆', t:'RealityJam 2025', d:'Event director — 24 teams, 96 participants, zero outages.'},
+      {g:'🎤', t:'Industry Talk Series', d:'Sourced and hosted guest speakers from VR studios.'}
+    ]
+  },
+  'tara-nair': {
+    name:'Tara Nair', role:'PR & Media Head', age:19, branch:'AI & ML', year:'Second year', seed:'TaraNair',
+    bio:'Runs the club\'s devlogs, socials, and event coverage, and maintains the YouTube channel where member projects get their trailers. If you saw the club somewhere, that was her doing.',
+    quote:'A project without a devlog is a tree falling in an empty forest.',
+    skills:['Video Editing','Devlogs','Social Media','Photography'],
+    projects:[
+      {g:'🎬', t:'Club YouTube', d:'Produces trailers and devlogs for every shipped project.'},
+      {g:'🏆', t:'RealityJam 2025', d:'Full event coverage — recap film hit 40k views.'}
+    ]
+  }
+};
+
+function photoHTML(m, ringClass){
+  const url = 'https://api.dicebear.com/9.x/notionists/svg?seed=' + encodeURIComponent(m.seed) + '&backgroundColor=131737';
+  const initials = m.name.split(' ').map(w=>w[0]).slice(0,2).join('');
+  const fallback = 'data:image/svg+xml,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#131737"/><text x="50" y="62" font-family="monospace" font-size="34" fill="#4DE8FF" text-anchor="middle">${initials}</text></svg>`);
+  return `<div class="photo-ring ${ringClass||''}"><img src="${url}" alt="Photo of ${m.name}" loading="lazy" onerror="this.onerror=null;this.src='${fallback}'"></div>`;
+}
+
+/* ---------- RENDER MEMBER GRIDS ---------- */
+function renderMembers(){
+  const fac = [], core = [];
+  for(const [id,m] of Object.entries(MEMBERS)){
+    const card = `
+      <div class="member ${m.faculty?'faculty':''}" data-member="${id}" role="link" tabindex="0"
+           aria-label="View profile of ${m.name}">
+        ${photoHTML(m)}
+        <h4>${m.name}</h4>
+        <div class="role">${m.role}</div>
+        <p class="bio">${m.bio.split('. ')[0]}.</p>
+        <div class="view-tag">View profile →</div>
+      </div>`;
+    (m.faculty ? fac : core).push(card);
+  }
+  document.getElementById('facultyGrid').innerHTML = fac.join('');
+  document.getElementById('coreGrid').innerHTML = core.join('');
+  document.querySelectorAll('[data-member]').forEach(el=>{
+    const go = () => { history.pushState(null,'','#member/'+el.dataset.member); showPage('member/'+el.dataset.member); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
+  });
+}
+
+/* ---------- RENDER PROFILE PAGE ---------- */
+function renderProfile(id){
+  const m = MEMBERS[id];
+  const mount = document.getElementById('profileMount');
+  if(!m){
+    mount.innerHTML = `<div class="page-head"><span class="hud">404</span>
+      <h1>Member not found</h1><p>This profile doesn't exist — head back to the members page.</p></div>`;
+    return;
+  }
+  mount.innerHTML = `
+    <div class="profile-card">
+      <div class="profile-left">
+        ${photoHTML(m)}
+        <h2>${m.name}</h2>
+        <div class="role">${m.role}</div>
+        <div class="profile-stats">
+          <div class="ps"><b>Age</b><span>${m.age}</span></div>
+          <div class="ps"><b>Branch</b><span>${m.branch}</span></div>
+          <div class="ps"><b>Year</b><span>${m.year}</span></div>
+          <div class="ps"><b>Projects</b><span>${m.projects.length}</span></div>
+        </div>
+      </div>
+      <div class="profile-right">
+        <span class="hud">Quote</span>
+        <div class="quote">${m.quote}</div>
+        <span class="hud">About</span>
+        <p class="profile-bio">${m.bio}</p>
+        <span class="hud">Projects Built</span>
+        <div class="proj-mini">
+          ${m.projects.map(p=>`
+            <div class="pm">
+              <div class="g">${p.g}</div>
+              <div><h4>${p.t}</h4><p>${p.d}</p></div>
+            </div>`).join('')}
+        </div>
+        <div style="margin-top:30px"><span class="hud">Toolkit</span>
+          <div class="profile-skills" style="margin-top:14px">
+            ${m.skills.map(s=>`<span class="chip">${s}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.title = m.name + ' — XRGD Club | SIT Pune';
+}
+
+/* ---------- SPA navigation ---------- */
+const pages = ['home','about','members','projects','events','contact','join'];
+function showPage(name){
+  let nav = name;
+  if(name.startsWith('member/')){
+    renderProfile(name.split('/')[1]);
+    nav = 'members';
+    name = 'member';
+  } else if(!pages.includes(name)){
+    name = nav = 'home';
+  }
+  if(name !== 'member') document.title = 'XRGD — AR/VR & Game Development Club | Symbiosis Institute of Technology';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'));
+  document.getElementById('page-' + name).classList.add('visible');
+  document.querySelectorAll('.nav-links a').forEach(a =>
+    a.classList.toggle('active', a.dataset.nav === nav));
+  document.getElementById('navLinks').classList.remove('open');
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+}
+document.querySelectorAll('[data-nav]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.preventDefault();
+    const name = el.dataset.nav;
+    history.pushState(null,'','#'+name);
+    showPage(name);
+  });
+});
+window.addEventListener('popstate', () => showPage(decodeURIComponent(location.hash.replace('#','')) || 'home'));
+renderMembers();
+showPage(decodeURIComponent(location.hash.replace('#','')) || 'home');
+
+document.getElementById('menuBtn').addEventListener('click', () =>
+  document.getElementById('navLinks').classList.toggle('open'));
+
+/* ---------- Join form (demo) ---------- */
+document.getElementById('joinForm').addEventListener('submit', e => {
+  e.preventDefault();
+  document.getElementById('joinMsg').style.display = 'block';
+  e.target.reset();
+  setTimeout(()=>document.getElementById('joinMsg').style.display='none', 7000);
+});
+
+/* ---------- Countdown to RealityJam (Jun 28, 2026, 9:00 IST) ---------- */
+const jamDate = new Date('2026-06-28T09:00:00+05:30').getTime();
+function tickCountdown(){
+  let diff = Math.max(0, jamDate - Date.now());
+  const d = Math.floor(diff / 864e5);
+  const h = Math.floor(diff % 864e5 / 36e5);
+  const m = Math.floor(diff % 36e5 / 6e4);
+  const s = Math.floor(diff % 6e4 / 1e3);
+  cdD.textContent = String(d).padStart(2,'0');
+  cdH.textContent = String(h).padStart(2,'0');
+  cdM.textContent = String(m).padStart(2,'0');
+  cdS.textContent = String(s).padStart(2,'0');
+}
+setInterval(tickCountdown, 1000); tickCountdown();
+
+/* ---------- Hero session clock ---------- */
+setInterval(() => {
+  const t = new Date();
+  document.getElementById('heroClock').textContent =
+    [t.getHours(),t.getMinutes(),t.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+}, 1000);
+
+/* ---------- Contact form (demo) ---------- */
+document.getElementById('contactForm').addEventListener('submit', e => {
+  e.preventDefault();
+  document.getElementById('formMsg').style.display = 'block';
+  e.target.reset();
+  setTimeout(()=>document.getElementById('formMsg').style.display='none', 6000);
+});
+
+/* ---------- THREE.JS HERO ---------- */
+(function(){
+  const canvas = document.getElementById('three-canvas');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x07080F, 0.035);
+  const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+  camera.position.set(0, 0, 9);
+
+  // Lights
+  scene.add(new THREE.AmbientLight(0x404a7a, 0.8));
+  const pCyan = new THREE.PointLight(0x4DE8FF, 1.6, 30);
+  pCyan.position.set(6, 4, 6);
+  scene.add(pCyan);
+  const pMag = new THREE.PointLight(0xFF4DA6, 1.4, 30);
+  pMag.position.set(-6, -3, 5);
+  scene.add(pMag);
+
+  // Core: wireframe icosahedron "portal core"
+  const core = new THREE.Group();
+  const ico = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(2.1, 1),
+    new THREE.MeshStandardMaterial({color:0x0E1124, metalness:.6, roughness:.35, flatShading:true})
+  );
+  const icoWire = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(2.12, 1),
+    new THREE.MeshBasicMaterial({color:0x4DE8FF, wireframe:true, transparent:true, opacity:.5})
+  );
+  core.add(ico, icoWire);
+
+  // Inner glowing octahedron
+  const inner = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.85, 0),
+    new THREE.MeshBasicMaterial({color:0xFF4DA6, wireframe:true, transparent:true, opacity:.85})
+  );
+  core.add(inner);
+  scene.add(core);
+
+  // Orbit rings (anaglyph pair)
+  function ring(radius, color, tiltX, tiltZ){
+    const r = new THREE.Mesh(
+      new THREE.TorusGeometry(radius, 0.015, 8, 120),
+      new THREE.MeshBasicMaterial({color, transparent:true, opacity:.6})
+    );
+    r.rotation.set(tiltX, 0, tiltZ);
+    scene.add(r);
+    return r;
+  }
+  const ring1 = ring(3.2, 0x4DE8FF, Math.PI/2.4, 0.3);
+  const ring2 = ring(3.55, 0xFF4DA6, Math.PI/1.9, -0.45);
+
+  // Floating satellite shapes
+  const sats = [];
+  const satGeos = [
+    new THREE.TetrahedronGeometry(0.28),
+    new THREE.BoxGeometry(0.3,0.3,0.3),
+    new THREE.OctahedronGeometry(0.26)
+  ];
+  for(let i=0;i<10;i++){
+    const m = new THREE.Mesh(
+      satGeos[i%3],
+      new THREE.MeshStandardMaterial({
+        color: i%2 ? 0x4DE8FF : 0xFF4DA6,
+        emissive: i%2 ? 0x103a44 : 0x441030,
+        metalness:.5, roughness:.4, flatShading:true
+      })
+    );
+    m.userData = {
+      r: 3.6 + Math.random()*2.6,
+      speed: 0.15 + Math.random()*0.25,
+      phase: Math.random()*Math.PI*2,
+      yAmp: (Math.random()-0.5)*2.4,
+      spin: 0.5+Math.random()
+    };
+    scene.add(m); sats.push(m);
+  }
+
+  // Particle starfield
+  const N = 900;
+  const pos = new Float32Array(N*3);
+  for(let i=0;i<N;i++){
+    pos[i*3]   = (Math.random()-0.5)*46;
+    pos[i*3+1] = (Math.random()-0.5)*28;
+    pos[i*3+2] = (Math.random()-0.5)*30 - 4;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  const stars = new THREE.Points(pGeo, new THREE.PointsMaterial({
+    color:0x8C9CFF, size:0.05, transparent:true, opacity:.8
+  }));
+  scene.add(stars);
+
+  // Grid floor — game-dev vernacular
+  const grid = new THREE.GridHelper(60, 60, 0x4DE8FF, 0x1A2050);
+  grid.position.y = -4.6;
+  grid.material.transparent = true;
+  grid.material.opacity = 0.22;
+  scene.add(grid);
+
+  // Mouse parallax
+  let mx=0, my=0, tx=0, ty=0;
+  addEventListener('pointermove', e => {
+    mx = (e.clientX/innerWidth - .5)*2;
+    my = (e.clientY/innerHeight - .5)*2;
+  });
+
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize(){
+    const w = canvas.clientWidth || innerWidth;
+    const h = canvas.clientHeight || innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize); resize();
+
+  const clock = new THREE.Clock();
+  function animate(){
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+    const dt = reduceMotion ? 0.08 : 1;
+
+    core.rotation.y = t*0.18*dt;
+    core.rotation.x = Math.sin(t*0.22)*0.18*dt;
+    inner.rotation.x = t*0.7*dt;
+    inner.rotation.z = t*0.5*dt;
+    const pulse = 1 + Math.sin(t*1.8)*0.06*dt;
+    inner.scale.setScalar(pulse);
+
+    ring1.rotation.z = 0.3 + t*0.1*dt;
+    ring2.rotation.z = -0.45 - t*0.08*dt;
+
+    sats.forEach((s,i)=>{
+      const u = s.userData;
+      const a = u.phase + t*u.speed*dt;
+      s.position.set(Math.cos(a)*u.r, Math.sin(a*0.7)*u.yAmp, Math.sin(a)*u.r*0.6);
+      s.rotation.x = t*u.spin*dt;
+      s.rotation.y = t*u.spin*0.7*dt;
+    });
+
+    stars.rotation.y = t*0.012*dt;
+    grid.position.z = (t*1.2*dt) % 1;
+
+    tx += (mx - tx)*0.04;
+    ty += (my - ty)*0.04;
+    camera.position.x = tx*1.4;
+    camera.position.y = -ty*0.9;
+    camera.lookAt(0,0,0);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>
