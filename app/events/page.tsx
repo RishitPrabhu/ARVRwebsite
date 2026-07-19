@@ -1,86 +1,206 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
+import { supabase } from "@/lib/supabase";
 
+interface Event {
+  id: string;
+  title: string;
+  short_description: string;
+  full_description: string | null;
+  start_time: string;
+  end_time: string | null;
+  event_type: string;
+  status: string;
+  location: string;
+  registration_fee: number;
+  registration_link: string |null;
+  image_url: string | null;
+  max_participants: number | null;
+  current_participants: number | null;
+  prizes: string | null;
+  resources_link: string | null;
+}
 
+export default function EventsPage() {
+  const [upcoming, setUpcoming] = useState<Event[]>([]);
+  const [past, setPast] = useState<Event[]>([]);
 
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
+  async function fetchEvents() {
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .order("start_time", { ascending: true });
 
-export default function EventsPage(){
+    if (error) {
+      console.error(error);
+      return;
+    }
 
+    setUpcoming(
+      data.filter(
+        (event) =>
+          event.status === "Upcoming" ||
+          event.status === "Ongoing" ||
+          event.status === "Registration Closed"
+      )
+    );
 
-    const handleNext = () => {
-        alert('Registration form goes here — link your Google Form or campus portal.');
-    };
+    setPast(
+      data.filter(
+        (event) =>
+          event.status === "Completed" ||
+          event.status === "Cancelled"
+      )
+    );
+  }
+
+  function handleRegister(link: string | null) {
+    if (!link || link.trim() === "") {
+      alert("Registration is not available.");
+      return;
+    }
+
+    window.open(link, "_blank", "noopener,noreferrer");
+  }
+
+  function renderEvent(event: Event, isPast = false) {
+    const date = new Date(event.start_time);
+
+    const day = date.getDate();
+
+    const month = date
+      .toLocaleString("en-US", {
+        month: "short",
+      })
+      .toUpperCase();
+
+    const year = date.getFullYear();
+
+    const time = date.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
 
     return (
-      <div className="">
-        <Navbar/>
-        <section className="page visible" id="page-events">
-  <div className="wrap events-wrap">
-    <div className="page-head">
-      <span className="hud">Events</span>
-      <h1><span className="chroma" data-text="On the calendar">On the calendar</span></h1>
-      <p>Jams, workshops, demo nights, and speaker sessions — open to all SIT students unless noted.</p>
-    </div>
+      <div
+        key={event.id}
+        className={`event-row ${isPast ? "opacity-75" : ""} ${
+          event.event_type === "Flagship" && !isPast ? "featured" : ""
+        }`}
+      >
+        <div className="date-block">
+          <div className="d">{day}</div>
+          <div className="m">
+            {month} {year}
+          </div>
+        </div>
 
-    <span className="hud">Upcoming</span>
-    <div className="event-row featured">
-      <div className="date-block"><div className="d">28</div><div className="m">JUN 2026</div></div>
-      <div>
-        <span className="tag">Flagship</span>
-        <h3 className="mt-[8px]">RealityJam 2026</h3>
-        <p>Our annual 36-hour game jam. Theme revealed at kickoff; build a game or XR prototype in teams of 2–4. Judged on creativity, playability, and polish.</p>
-        <div className="event-meta">📍 <span>Innovation Lab, SIT Lavale</span> · 🕘 <span>Sat 9:00 AM → Sun 9:00 PM</span> · 🏆 <span>Prize pool + incubation slots</span></div>
-      </div>
-      <button className="btn btn-primary" onClick={handleNext}>Register</button>
-    </div>
-    <div className="event-row">
-      <div className="date-block"><div className="d">15</div><div className="m">JUL 2026</div></div>
-      <div>
-        <h3>Intro to Unity — Freshers' Workshop</h3>
-        <p>Zero-to-playable in three hours: scenes, physics, scripting basics, and building your first 3D mini-game. Laptops provided in lab.</p>
-        <div className="event-meta">📍 <span>CS Lab 204</span> · 🕔 <span>5:00 PM – 8:00 PM</span> · 🎟 <span>Free, no experience needed</span></div>
-      </div>
-      <button className="btn btn-ghost" onClick={handleNext}>Register</button>
-    </div>
-    <div className="event-row">
-      <div className="date-block"><div className="d">02</div><div className="m">AUG 2026</div></div>
-      <div>
-        <h3>XR Demo Night #5</h3>
-        <p>Members demo works-in-progress on the club's Quest 3 units; open floor for feedback and playtesting. Snacks on us.</p>
-        <div className="event-meta">📍 <span>XR Lab</span> · 🕕 <span>6:00 PM onwards</span></div>
-      </div>
-      <button className="btn btn-ghost" onClick={handleNext}>RSVP</button>
-    </div>
+        <div className="flex-1">
+          {!isPast && (
+            <span className="tag">{event.event_type}</span>
+          )}
 
-    <span className="hud">Past Events</span>
-    <div className="event-row opacity-75">
-      <div className="date-block"><div className="d">14</div><div className="m">MAR 2026</div></div>
-      <div>
-        <h3>Shader Bootcamp</h3>
-        <p>Two-day deep dive into Shader Graph and HLSL — stylised water, dissolve effects, and toon shading. 60+ attendees.</p>
-        <div className="event-meta">✅ <span>Completed</span> · Materials on club GitHub</div>
-      </div>
-    </div>
-    <div className="event-row opacity-75">
-      <div className="date-block"><div className="d">31</div><div className="m">JAN 2026</div></div>
-      <div>
-        <h3>Industry Talk: Building for Quest</h3>
-        <p>Guest session with a VR studio engineer on performance budgets, comfort design, and shipping to the Meta Store.</p>
-        <div className="event-meta">✅ <span>Completed</span> · Recording on club YouTube</div>
-      </div>
-    </div>
-    <div className="event-row opacity-75">
-      <div className="date-block"><div className="d">09</div><div className="m">NOV 2025</div></div>
-      <div>
-        <h3>RealityJam 2025</h3>
-        <p>24 teams, 36 hours, theme "Gravity Optional". Winner Orbital Decay later published on itch.io.</p>
-        <div className="event-meta">✅ <span>Completed</span> · 96 participants</div>
-      </div>
-    </div>
-  </div>
-</section>
+          <h3 className="mt-[8px]">{event.title}</h3>
 
+          <p>{event.short_description}</p>
+
+          <div className="event-meta">
+            📍 <span>{event.location}</span>
+            {" · "}
+            🕘 <span>{time}</span>
+            {" · "}
+            🎟{" "}
+            <span>
+              {event.registration_fee === 0
+                ? "Free"
+                : `₹${event.registration_fee}`}
+            </span>
+
+            {event.prizes && (
+              <>
+                {" · "}
+                🏆 <span>{event.prizes}</span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Buttons */}
+
+        {event.status === "Upcoming" && (
+          <button
+            className={
+              event.event_type === "Flagship"
+                ? "btn btn-primary"
+                : "btn btn-ghost"
+            }
+            onClick={() => handleRegister(event.registration_link)}
+          >
+            Register
+          </button>
+        )}
+
+        {event.status === "Registration Closed" && (
+          <button
+            className="btn btn-ghost"
+            disabled
+          >
+            Registration Closed
+          </button>
+        )}
       </div>
     );
+  }
+
+  return (
+    <div>
+      <Navbar />
+
+      <section className="page visible" id="page-events">
+        <div className="wrap events-wrap">
+
+          <div className="page-head">
+            <span className="hud">Events</span>
+
+            <h1>
+              <span
+                className="chroma"
+                data-text="On the calendar"
+              >
+                On the calendar
+              </span>
+            </h1>
+
+            <p>
+              Jams, workshops, demo nights, and speaker sessions —
+              open to all SIT students unless noted.
+            </p>
+          </div>
+
+          <span className="hud">Upcoming</span>
+
+          {upcoming.length === 0 ? (
+            <p>No upcoming events.</p>
+          ) : (
+            upcoming.map((event) => renderEvent(event))
+          )}
+
+          <span className="hud">Past Events</span>
+
+          {past.length === 0 ? (
+            <p>No past events.</p>
+          ) : (
+            past.map((event) => renderEvent(event, true))
+          )}
+
+        </div>
+      </section>
+    </div>
+  );
 }

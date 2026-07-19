@@ -30,7 +30,6 @@ export default function Navbar() {
     <li><Link href="/contactus">Contact Us</Link></li>
     <li><Link href="/joinus">Join</Link></li>
     
-    <li><Link href="/test">Test</Link></li>
   </ul>
 </nav>
   );
