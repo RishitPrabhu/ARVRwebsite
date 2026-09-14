@@ -28,7 +28,7 @@ function getMemberImageUrl(imageUrl: string | null) {
   );
 
   if (driveFileMatch) {
-    return `https://drive.google.com/uc?export=view&id=${driveFileMatch[1]}`;
+    return `https://drive.google.com/thumbnail?id=${driveFileMatch[1]}&sz=w1000`;
   }
 
   return imageUrl;
