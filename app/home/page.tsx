@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Navbar from '../components/navbar';
 import HeroScene from './HeroScene';
+import MatrixRain from './MatrixRain';
 
 
 export default function HomePage(){
@@ -33,7 +34,9 @@ export default function HomePage(){
     </div>
     <div className="scroll-hint">SCROLL ▾</div>
   </div>
-
+  <div className="matrix-section" aria-hidden="true">
+    <MatrixRain />
+  </div>
   <div className="upcoming">
     <div className="wrap">
       <span className="hud">Upcoming Event</span>
