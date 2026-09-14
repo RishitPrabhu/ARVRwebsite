@@ -52,7 +52,7 @@ export default function MembersPage() {
         <img
           src={
             member.image_url ??
-            "https://placehold.co/300x300?text=Member"
+            "/icons/user.png"
           }
           alt={member.name}
           className="w-full aspect-square object-cover rounded-xl mb-4"
