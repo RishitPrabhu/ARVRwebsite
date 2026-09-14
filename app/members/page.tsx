@@ -18,6 +18,22 @@ interface Member {
   display_order: number;
 }
 
+function getMemberImageUrl(imageUrl: string | null) {
+  if (!imageUrl) {
+    return "/icons/user.png";
+  }
+
+  const driveFileMatch = imageUrl.match(
+    /drive\.google\.com\/file\/d\/([^/]+)/
+  );
+
+  if (driveFileMatch) {
+    return `https://drive.google.com/uc?export=view&id=${driveFileMatch[1]}`;
+  }
+
+  return imageUrl;
+}
+
 export default function MembersPage() {
   const [faculty, setFaculty] = useState<Member[]>([]);
   const [core, setCore] = useState<Member[]>([]);
@@ -50,10 +66,7 @@ export default function MembersPage() {
     return (
       <div className="card p-5" key={member.id}>
         <img
-          src={
-            member.image_url ??
-            "/icons/user.png"
-          }
+          src={getMemberImageUrl(member.image_url)}
           alt={member.name}
           className="w-full aspect-square object-cover rounded-xl mb-4"
         />
