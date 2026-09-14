@@ -79,7 +79,7 @@ export default function MembersPage() {
               rel="noreferrer"
               className="btn btn-ghost"
             >
-              LinkedIn
+              <img src="/images/linkedin.png" alt="LinkedIn" />
             </a>
           )}
 
@@ -90,7 +90,7 @@ export default function MembersPage() {
               rel="noreferrer"
               className="btn btn-ghost"
             >
-              GitHub
+              <img src="/images/github.png" alt="GitHub" />
             </a>
           )}
 
