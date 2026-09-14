@@ -69,62 +69,64 @@ export default function MembersPage() {
 
   function MemberCard(member: Member) {
     return (
-      <div className="card p-5" key={member.id}>
+      <article className="member-card" key={member.id}>
         <img
           src={getMemberImageUrl(member.image_url)}
           alt={member.name}
-          className="w-full aspect-square object-cover rounded-xl mb-4"
+          className="member-photo"
         />
 
-        <h3>{member.name}</h3>
+        <div className="member-content">
+          <h3 className="member-name">{member.name}</h3>
 
-        <p className="text-sm opacity-70 mb-3">
-          {member.role}
-        </p>
+          <p className="member-role">{member.role}</p>
 
-        {member.bio && (
-          <p className="text-sm mb-4">
-            {member.bio}
+          <p className="member-bio">
+            {member.bio || "ARVR Club member"}
           </p>
-        )}
 
-        <div className="grid grid-cols-2 gap-[0.1rem]">
+          <div className="member-links">
 
-          {member.linkedin && (
-            <a
-              href={member.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-ghost2"
-            >
-              <img src="/icons/linkedin.png" alt="LinkedIn" width="24" height="24"/>
-            </a>
-          )}
+            {member.linkedin && (
+              <a
+                href={member.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="member-link"
+                aria-label={`${member.name} on LinkedIn`}
+              >
+                <img src="/icons/linkedin.png" alt="" width="24" height="24" />
+              </a>
+            )}
 
-          {member.github && (
-            <a
-              href={member.github}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-ghost2"
-            >
-              <img src="/icons/github.png" alt="GitHub" width="24" height="24"/>
-            </a>
-          )}
+            {member.github && (
+              <a
+                href={member.github}
+                target="_blank"
+                rel="noreferrer"
+                className="member-link"
+                aria-label={`${member.name} on GitHub`}
+              >
+                <img src="/icons/github.png" alt="" width="24" height="24" />
+              </a>
+            )}
 
-          {member.website && (
-            <a
-              href={member.website}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-ghost2"
-            >
-              <img src="/icons/world-wide-web.png" alt="Website" width="24" height="24"/>
-            </a>
-          )}
+            {member.website && (
+              <a
+                href={member.website}
+                target="_blank"
+                rel="noreferrer"
+                className="member-link"
+                aria-label={`${member.name}'s website`}
+              >
+                <img src="/icons/world-wide-web.png" alt="" width="24" height="24" />
+              </a>
+            )}
 
+          </div>
         </div>
-      </div>
+      </article>
+
     );
   }
 

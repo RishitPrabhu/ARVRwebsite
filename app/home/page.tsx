@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Navbar from '../components/navbar';
+import HeroScene from './HeroScene';
 
 
 export default function HomePage(){
@@ -8,7 +9,7 @@ export default function HomePage(){
         <Navbar/>
         <section className="page visible" id="page-home">
   <div id="hero">
-    <canvas id="three-canvas"></canvas>
+    <HeroScene />
     <div className="hero-frame"><i></i><i></i><i></i><i></i></div>
     <div className="hero-telemetry">
       FOV <span>110°</span> · IPD <span>63.5mm</span><br/>
