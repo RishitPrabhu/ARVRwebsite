@@ -77,7 +77,7 @@ export default function MembersPage() {
               href={member.linkedin}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-ghost"
+              className="btn btn-ghost2"
             >
               <img src="/icons/linkedin.png" alt="LinkedIn" width="24"/>
             </a>
@@ -88,7 +88,7 @@ export default function MembersPage() {
               href={member.github}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-ghost"
+              className="btn btn-ghost2"
             >
               <img src="/icons/github.png" alt="GitHub" width="24"/>
             </a>
