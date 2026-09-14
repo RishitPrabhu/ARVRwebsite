@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@font-face{
+  font-family:'Space Grotesk';
+  src:url('/fonts/SpaceGrotesk-VariableFont_wght.ttf') format('truetype');
+  font-weight:300 700;
+  font-style:normal;
+  font-display:swap;
+}
 
 :root{
   --void:#07080F;

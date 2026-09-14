@@ -14,7 +14,7 @@ export default function Navbar() {
   return (
     <nav>
   <div className="brand" data-nav="home">
-    <div className="mark">XR</div>
+    <div className="mark">ARVR</div>
     <div>
       <b>ARVR CLUB</b>
       <small>SYMBIOSIS INSTITUTE OF TECHNOLOGY</small>
