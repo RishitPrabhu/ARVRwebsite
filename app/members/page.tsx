@@ -37,6 +37,7 @@ function getMemberImageUrl(imageUrl: string | null) {
 export default function MembersPage() {
   const [faculty, setFaculty] = useState<Member[]>([]);
   const [core, setCore] = useState<Member[]>([]);
+  const [volunteers, setVolunteers] = useState<Member[]>([]);
 
   useEffect(() => {
     fetchMembers();
@@ -59,6 +60,10 @@ export default function MembersPage() {
 
     setCore(
       data.filter((member) => member.team === "Core")
+    );
+
+    setVolunteers(
+      data.filter((member) => member.team === "Volunteer")
     );
   }
 
@@ -83,7 +88,7 @@ export default function MembersPage() {
           </p>
         )}
 
-        <div className="flex gap-3 flex-wrap">
+        <div className="grid grid-cols-2 gap-[0.1rem]">
 
           {member.linkedin && (
             <a
@@ -92,7 +97,7 @@ export default function MembersPage() {
               rel="noreferrer"
               className="btn btn-ghost2"
             >
-              <img src="/icons/linkedin.png" alt="LinkedIn" width="24"/>
+              <img src="/icons/linkedin.png" alt="LinkedIn" width="24" height="24"/>
             </a>
           )}
 
@@ -103,7 +108,7 @@ export default function MembersPage() {
               rel="noreferrer"
               className="btn btn-ghost2"
             >
-              <img src="/icons/github.png" alt="GitHub" width="24"/>
+              <img src="/icons/github.png" alt="GitHub" width="24" height="24"/>
             </a>
           )}
 
@@ -112,9 +117,9 @@ export default function MembersPage() {
               href={member.website}
               target="_blank"
               rel="noreferrer"
-              className="btn btn-ghost"
+              className="btn btn-ghost2"
             >
-              <img src="/icons/world-wide-web.png" alt="Website" width="24"/>
+              <img src="/icons/world-wide-web.png" alt="Website" width="24" height="24"/>
             </a>
           )}
 
@@ -167,6 +172,18 @@ export default function MembersPage() {
 
             <div className="grid-4 mt-6">
               {core.map((member) => (
+                <MemberCard key={member.id} {...member} />
+              ))}
+            </div>
+          </div>
+
+          <div className="member-section mt-12">
+            <span className="hud">
+              Volunteers
+            </span>
+
+            <div className="grid-4 mt-6">
+              {volunteers.map((member) => (
                 <MemberCard key={member.id} {...member} />
               ))}
             </div>
