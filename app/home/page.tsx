@@ -69,17 +69,29 @@ export default function HomePage(){
       <h2 className="[clamp(28px,4vw,40px)] mt-[14px]">Three tracks, one playground.</h2>
       <div className="grid-3">
         <div className="card">
-          <div className="glyph">🕶️</div>
+          <div className="glyph" aria-hidden="true">
+            <svg viewBox="0 0 64 40" role="img">
+              <path d="M5 8h54v24H5zM12 15h15v10H12zM37 15h15v10H37zM27 18h10M5 13H1v14h4M59 13h4v14h-4" />
+            </svg>
+          </div>
           <h3>Virtual Reality</h3>
           <p>Full-immersion experiences on Quest and PCVR — locomotion systems, hand tracking, spatial audio, and VR interaction design built in Unity and Unreal.</p>
         </div>
         <div className="card">
-          <div className="glyph">📱</div>
+          <div className="glyph" aria-hidden="true">
+            <svg viewBox="0 0 64 40" role="img">
+              <path d="M4 11h22l4 5 4-5h22v13c0 7-5 12-12 12H40c-4 0-7-2-10-7-3 5-6 7-10 7h-4C5 36 1 31 1 24V11h3ZM8 17h14v12H8zM42 17h14v12H42zM27 19h10M16 20v6M13 23h6M48 21v4M45 23h6" />
+            </svg>
+          </div>
           <h3>Augmented Reality</h3>
           <p>Marker-based and markerless AR for mobile and web — ARCore, ARKit, WebXR, and campus-scale AR navigation and visualisation projects.</p>
         </div>
         <div className="card">
-          <div className="glyph">🎮</div>
+          <div className="glyph" aria-hidden="true">
+            <svg viewBox="0 0 64 40" role="img">
+              <path d="M17 10h30c7 0 12 5 14 14l2 9c1 5-5 8-8 4l-7-8H16l-7 8c-3 4-9 1-8-4l2-9c2-9 7-14 14-14ZM16 18v10M11 23h10M45 21h1M52 26h1" />
+            </svg>
+          </div>
           <h3>Game Development</h3>
           <p>From pixel-art platformers to multiplayer prototypes — gameplay programming, level design, shaders, game art, and publishing on itch.io.</p>
         </div>
