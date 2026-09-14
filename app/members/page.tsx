@@ -114,7 +114,7 @@ export default function MembersPage() {
               rel="noreferrer"
               className="btn btn-ghost"
             >
-              Website
+              <img src="/icons/world-wide-web.png" alt="Website" width="24"/>
             </a>
           )}
 
