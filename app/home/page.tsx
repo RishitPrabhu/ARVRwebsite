@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Navbar from '../components/navbar';
 import HeroScene from './HeroScene';
 import MatrixRain from './MatrixRain';
+import UpcomingEvent from './UpcomingEvent';
 
 
 export default function HomePage(){
@@ -40,28 +41,7 @@ export default function HomePage(){
   <div className="upcoming">
     <div className="wrap">
       <span className="hud">Upcoming Event</span>
-      <div className="upcoming-card mt-[26px]">
-        <div className="date-block">
-          <div className="d">28</div>
-          <div className="m">JUN 2026</div>
-        </div>
-        <div>
-          <span className="tag">Flagship · 36-Hour Jam</span>
-          <h3>RealityJam 2026 — Annual Game Jam</h3>
-          <p>36 hours. One theme, revealed on the spot. Teams of 2–4 build a playable game or XR prototype
-             from scratch — Unity, Unreal, Godot, or WebXR. Open to all SIT students, beginners welcome.
-             Venue: Innovation Lab, SIT Lavale Campus.</p>
-        </div>
-        <div>
-          <div className="countdown" id="countdown" aria-label="Countdown to RealityJam 2026">
-            <div className="cd-unit"><div className="n" id="cdD">--</div><div className="l">Days</div></div>
-            <div className="cd-unit"><div className="n" id="cdH">--</div><div className="l">Hrs</div></div>
-            <div className="cd-unit"><div className="n" id="cdM">--</div><div className="l">Min</div></div>
-            <div className="cd-unit"><div className="n" id="cdS">--</div><div className="l">Sec</div></div>
-          </div>
-          <a className="btn btn-primary mt-[18px] w-full justify-center" href="#events" data-nav="events">Register Interest</a>
-        </div>
-      </div>
+      <UpcomingEvent />
     </div>
   </div>
 

@@ -44,6 +44,7 @@ export default function AboutUS(){
         </div>
       </div>
     </div>
+    {/*
     <div className="timeline">
       <span className="hud">Our Journey</span>
       <div className="mt-[30px]">
@@ -54,6 +55,7 @@ export default function AboutUS(){
         <div className="tl-item"><div className="yr">2026</div><div><h4>Scaling up</h4><p>120+ members across three tracks. RealityJam 2026 opens to all SIT departments.</p></div></div>
       </div>
     </div>
+    */}
   </div>
 </section>
 
