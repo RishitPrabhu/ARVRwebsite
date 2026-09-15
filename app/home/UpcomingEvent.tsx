@@ -2,24 +2,46 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { MapPin, Clock, Ticket, ExternalLink, Sparkles } from 'lucide-react';
 
 type Event = {
   id: string;
   title: string;
   short_description: string;
-  start_time: string;
+  start_time: string | null;
   event_type: string;
   status: string;
   location: string;
-  registration_fee: number;
+  registration_fee: number | null;
   registration_link: string | null;
 };
 
 const ACTIVE_STATUSES = ['Upcoming', 'Ongoing', 'Registration Closed'];
 
-function formatDate(dateValue: string) {
+function formatDate(dateValue: string | null | undefined) {
+  if (!dateValue) {
+    return {
+      iso: '',
+      day: '--',
+      month: 'TBA',
+      year: '',
+      time: 'TBA',
+    };
+  }
+
   const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) {
+    return {
+      iso: '',
+      day: '--',
+      month: 'TBA',
+      year: '',
+      time: 'TBA',
+    };
+  }
+
   return {
+    iso: date.toISOString(),
     day: date.getDate().toString().padStart(2, '0'),
     month: date.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
     year: date.getFullYear(),
@@ -33,77 +55,114 @@ export default function UpcomingEvent() {
 
   useEffect(() => {
     async function fetchFlagshipEvent() {
-      const { data, error } = await supabase
-        .from('events')
-        .select('id, title, short_description, start_time, event_type, status, location, registration_fee, registration_link')
-        .eq('event_type', 'Flagship')
-        .in('status', ACTIVE_STATUSES)
-        .order('start_time', { ascending: true })
-        .limit(1)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('id, title, short_description, start_time, event_type, status, location, registration_fee, registration_link')
+          .eq('event_type', 'Flagship')
+          .in('status', ACTIVE_STATUSES)
+          .order('start_time', { ascending: true })
+          .limit(1)
+          .maybeSingle();
 
-      if (error) {
-        console.error(error);
-      } else {
-        setEvent(data);
+        if (error) {
+          console.error('Error fetching flagship event:', error);
+          setEvent(null);
+        } else {
+          setEvent(data ?? null);
+        }
+      } catch (error) {
+        console.error('Unexpected error while fetching flagship event:', error);
+        setEvent(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
 
     fetchFlagshipEvent();
   }, []);
 
   if (loading) {
-    return <p className="event-loading">Loading the next flagship event...</p>;
+    return (
+      <div className="event-loading-panel" aria-live="polite">
+        <div className="event-loading-skeleton" />
+      </div>
+    );
   }
 
   if (!event) {
-    return <p className="event-loading">No flagship event scheduled yet.</p>;
+    return (
+      <div className="event-empty-state">
+        <p>No flagship event scheduled at the moment.</p>
+      </div>
+    );
   }
 
   const date = formatDate(event.start_time);
-  const registrationAvailable = event.status === 'Upcoming' && event.registration_link;
+  const registrationAvailable = event.status === 'Upcoming' && Boolean(event.registration_link);
+  const feeLabel = event.registration_fee === null || event.registration_fee === undefined
+    ? 'Check details'
+    : event.registration_fee === 0
+      ? 'Free Entry'
+      : `₹${event.registration_fee}`;
+
+  const statusClass = event.status === 'Ongoing' ? 'event-status-dot ongoing' : 'event-status-dot';
 
   return (
-    <div className="upcoming-card mt-[26px]">
+    <article className="upcoming-card">
       <div className="event-date-panel">
-        <span className="event-kicker">Next signal</span>
-        <div className="date-block">
-          <div className="d">{date.day}</div>
-          <div className="m">{date.month} {date.year}</div>
-        </div>
+        <span className="event-kicker">
+          <Sparkles className="w-3 h-3" /> Signal
+        </span>
+        <time dateTime={date.iso} className="date-block">
+          <span className="d">{date.day}</span>
+          <span className="m">{date.month} {date.year}</span>
+        </time>
       </div>
-      <div>
+
+      <div className="event-body">
         <div className="event-heading-row">
-          <span className="event-overline">// Featured transmission</span>
           <span className="tag">{event.event_type}</span>
-          <span className={`event-status-dot ${event.status.toLowerCase().replaceAll(' ', '-')}`}>
-            {event.status}
+          <span className={statusClass}>{event.status}</span>
+        </div>
+
+        <div>
+          <h3>{event.title}</h3>
+          <p>{event.short_description}</p>
+        </div>
+
+        <div className="event-meta-grid">
+          <span>
+            <b>Venue</b>
+            <span className="meta-value"><MapPin className="meta-icon" />{event.location}</span>
+          </span>
+          <span>
+            <b>Time</b>
+            <span className="meta-value"><Clock className="meta-icon" />{date.time}</span>
+          </span>
+          <span>
+            <b>Fee</b>
+            <span className="meta-value"><Ticket className="meta-icon" />{feeLabel}</span>
           </span>
         </div>
-        <h3>{event.title}</h3>
-        <p>{event.short_description}</p>
-        <div className="event-meta event-meta-grid">
-          <span><b>Location</b>{event.location}</span>
-          <span><b>Starts</b>{date.time}</span>
-          <span><b>Entry</b>{event.registration_fee === 0 ? 'Free' : `₹${event.registration_fee}`}</span>
-        </div>
       </div>
+
       <div className="event-action-rail">
-        <span className="event-action-label">Reserve your spot</span>
+        <span className="event-action-label">{registrationAvailable ? 'Reserve' : 'Status'}</span>
         {registrationAvailable ? (
           <a
-            className="btn btn-primary event-action-button"
-            href={event.registration_link || undefined}
+            href={event.registration_link!}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
+            className="btn btn-primary event-action-button"
           >
-            Register <span aria-hidden="true">↗</span>
+            Register Now
+            <ExternalLink className="w-4 h-4" />
           </a>
         ) : (
           <span className="event-status">{event.status}</span>
         )}
       </div>
-    </div>
+    </article>
   );
 }

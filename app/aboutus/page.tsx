@@ -13,12 +13,12 @@ export default function AboutUS(){
     </div>
     <div className="about-grid">
       <div>
-        <p>The <b>AR/VR &amp; Game Development Club (XRGD)</b> was founded in 2022 by a small group of students who
+        <p>The <b>AR/VR &amp; Game Development Club (ARVR)</b> was founded in 2022 by a small group of students who
         wanted a place on campus to build games and experiment with headsets — not just talk about them.
         Today we are one of the most active technical clubs under <b>Symbiosis Institute of Technology (SIT), Pune</b>,
         operating under the umbrella of Symbiosis International (Deemed University).</p>
         <p>We run weekly build sessions, semester-long project teams, workshops on engines and tooling,
-        and flagship events like <b>RealityJam</b>, our annual 36-hour game jam. Members work across the full
+        and flagship events, our participation in multiple game jams. Members work across the full
         pipeline — programming, 3D art, sound, UX for spatial interfaces, and playtesting.</p>
         <p>No prior experience is required to join. If you can attend the onboarding workshop and commit to
         one project a semester, you're in. We pair every newcomer with a senior mentor for their first build.</p>

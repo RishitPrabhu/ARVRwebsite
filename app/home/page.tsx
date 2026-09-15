@@ -80,10 +80,22 @@ export default function HomePage(){
         </div>
       </div>
       <div className="stats-strip">
-        <div className="stat"><div className="n">120<em>+</em></div><div className="l">Active Members</div></div>
-        <div className="stat"><div className="n">25<em>+</em></div><div className="l">Projects Shipped</div></div>
-        <div className="stat"><div className="n">14</div><div className="l">Events Hosted</div></div>
-        <div className="stat"><div className="n">6</div><div className="l">Hackathon Wins</div></div>
+        <div className="stat">
+          <div className="n">20<em>+</em></div>
+          <div className="l">Active Members</div>
+        </div>
+        <div className="stat">
+          <div className="n">15<em>+</em></div>
+          <div className="l">Projects Shipped</div>
+        </div>
+        <div className="stat">
+          <div className="n">10<em>+</em></div>
+          <div className="l">Events Hosted</div>
+        </div>
+        <div className="stat">
+          <div className="n">3<em>+</em></div>
+          <div className="l">Hackathon Wins</div>
+        </div>
       </div>
     </div>
   </div>

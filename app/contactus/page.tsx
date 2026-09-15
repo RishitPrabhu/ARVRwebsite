@@ -41,7 +41,7 @@ export default function ContactUS()
     <div className="contact-grid">
       <div className="contact-info">
         <div className="row">
-          <div className="ic"><img src="/icons/world-wide-web.png" alt="" /></div>
+          <div className="ic"><img src="/icons/school.png" alt="" /></div>
           <div><b>Find us on campus</b><span>CSE Department, 4th floor, Symbiosis Institute of Technology, Lavale, Pune, Maharashtra 412115</span></div>
         </div>
         <div className="row">
@@ -74,7 +74,7 @@ export default function ContactUS()
           <label htmlFor="cTopic">I'm reaching out about</label>
           <select id="cTopic" name="topic">
             <option>Joining the club</option>
-            <option>RealityJam 2026</option>
+            <option>Event Information</option>
             <option>Collaboration / sponsorship</option>
             <option>Project help</option>
             <option>Something else</option>
