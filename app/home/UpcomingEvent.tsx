@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { subscribeToTable } from '@/lib/supabase';
 import { MapPin, Clock, Ticket, ExternalLink, Sparkles } from 'lucide-react';
 
 type Event = {
@@ -54,32 +54,33 @@ export default function UpcomingEvent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchFlagshipEvent() {
-      try {
-        const { data, error } = await supabase
-          .from('events')
-          .select('id, title, short_description, start_time, event_type, status, location, registration_fee, registration_link')
-          .eq('event_type', 'Flagship')
-          .in('status', ACTIVE_STATUSES)
-          .order('start_time', { ascending: true })
-          .limit(1)
-          .maybeSingle();
+    const unsubscribe = subscribeToTable<Event>(
+      'events',
+      (data) => {
+        const current = data
+          .filter(
+            (row) =>
+              row.event_type === 'Flagship' &&
+              ACTIVE_STATUSES.includes(row.status)
+          )
+          .sort((a, b) => {
+            const aTime = a.start_time ? new Date(a.start_time).getTime() : 0;
+            const bTime = b.start_time ? new Date(b.start_time).getTime() : 0;
+            return aTime - bTime;
+          })[0] ?? null;
 
-        if (error) {
-          console.error('Error fetching flagship event:', error);
-          setEvent(null);
-        } else {
-          setEvent(data ?? null);
-        }
-      } catch (error) {
-        console.error('Unexpected error while fetching flagship event:', error);
-        setEvent(null);
-      } finally {
+        setEvent(current);
         setLoading(false);
+      },
+      {
+        select: 'id, title, short_description, start_time, event_type, status, location, registration_fee, registration_link',
+        eq: { event_type: 'Flagship' },
+        in: { status: ACTIVE_STATUSES },
+        order: { column: 'start_time', ascending: true },
       }
-    }
+    );
 
-    fetchFlagshipEvent();
+    return () => unsubscribe();
   }, []);
 
   if (loading) {

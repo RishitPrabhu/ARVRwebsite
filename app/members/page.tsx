@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "../components/navbar";
-import { supabase } from "@/lib/supabase";
+import { subscribeToTable } from "@/lib/supabase";
 
 interface Member {
   id: string;
@@ -40,32 +39,16 @@ export default function MembersPage() {
   const [volunteers, setVolunteers] = useState<Member[]>([]);
 
   useEffect(() => {
-    fetchMembers();
+    const unsubscribe = subscribeToTable<Member>("members", (data) => {
+      setFaculty(data.filter((member) => member.team === "Faculty"));
+      setCore(data.filter((member) => member.team === "Core"));
+      setVolunteers(data.filter((member) => member.team === "Volunteer"));
+    }, {
+      order: { column: "display_order", ascending: true },
+    });
+
+    return () => unsubscribe();
   }, []);
-
-  async function fetchMembers() {
-    const { data, error } = await supabase
-      .from("members")
-      .select("*")
-      .order("display_order", { ascending: true });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setFaculty(
-      data.filter((member) => member.team === "Faculty")
-    );
-
-    setCore(
-      data.filter((member) => member.team === "Core")
-    );
-
-    setVolunteers(
-      data.filter((member) => member.team === "Volunteer")
-    );
-  }
 
   function MemberCard(member: Member) {
     return (
@@ -132,8 +115,6 @@ export default function MembersPage() {
 
   return (
     <div>
-      <Navbar />
-
       <section className="page visible" id="page-members">
         <div className="wrap">
 

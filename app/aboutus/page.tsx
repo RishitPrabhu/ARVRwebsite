@@ -1,9 +1,6 @@
-import Navbar from "../components/navbar";
-
 export default function AboutUS(){
     return (
       <div className="">
-        <Navbar/>
         <section className="page visible" id="page-about">
   <div className="wrap">
     <div className="page-head">

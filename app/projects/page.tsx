@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "../components/navbar";
-import { supabase } from "@/lib/supabase";
+import { subscribeToTable } from "@/lib/supabase";
 
 interface Project {
   id: string;
@@ -22,22 +21,14 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    fetchProjects();
+    const unsubscribe = subscribeToTable<Project>("projects", (data) => {
+      setProjects(data);
+    }, {
+      order: { column: "display_order", ascending: true },
+    });
+
+    return () => unsubscribe();
   }, []);
-
-  async function fetchProjects() {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .order("display_order");
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setProjects(data);
-  }
 
   function statusClass(status: string) {
     switch (status) {
@@ -54,8 +45,6 @@ export default function ProjectsPage() {
 
   return (
     <div>
-      <Navbar />
-
       <section className="page visible" id="page-projects">
         <div className="wrap">
 

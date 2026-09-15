@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent } from "react";
-import Navbar from "../components/navbar";
 
 const CLUB_EMAIL = "arvrclub_cs@sitpune.edu.in";
 
@@ -35,7 +34,6 @@ export default function JoinUs(){
 
     return(
 <div className="">
-  <Navbar/>
   <section className="page visible" id="page-join">
   <div className="wrap">
     <div className="page-head">

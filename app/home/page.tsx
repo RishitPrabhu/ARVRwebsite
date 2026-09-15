@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Navbar from '../components/navbar';
 import HeroScene from './HeroScene';
 import MatrixRain from './MatrixRain';
 import UpcomingEvent from './UpcomingEvent';
@@ -8,7 +7,6 @@ import UpcomingEvent from './UpcomingEvent';
 export default function HomePage(){
     return(
       <div className="">
-        <Navbar/>
         <section className="page visible" id="page-home">
   <div id="hero">
     <HeroScene />
@@ -29,8 +27,8 @@ export default function HomePage(){
         where students design immersive experiences, ship playable games, and prototype the spatial web.
       </p>
       <div className="hero-cta">
-        <a className="btn btn-primary" href="#join" data-nav="join">Join the Club →</a>
-        <a className="btn btn-ghost" href="#projects" data-nav="projects">Explore Projects</a>
+        <Link className="btn btn-primary" href="/joinus">Join the Club →</Link>
+        <Link className="btn btn-ghost" href="/projects">Explore Projects</Link>
       </div>
     </div>
     <div className="scroll-hint">SCROLL ▾</div>

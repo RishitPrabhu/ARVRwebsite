@@ -1,4 +1,3 @@
-import Navbar from "./components/navbar";
 import HomePage from "./home/page";
 import BottomBar from "./components/BottomBar";
 

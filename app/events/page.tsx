@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "../components/navbar";
-import { supabase } from "@/lib/supabase";
+import { subscribeToTable } from "@/lib/supabase";
 
 interface Event {
   id: string;
@@ -28,37 +27,29 @@ export default function EventsPage() {
   const [past, setPast] = useState<Event[]>([]);
 
   useEffect(() => {
-    fetchEvents();
+    const unsubscribe = subscribeToTable<Event>("events", (data) => {
+      setUpcoming(
+        data.filter(
+          (event) =>
+            event.status === "Upcoming" ||
+            event.status === "Ongoing" ||
+            event.status === "Registration Closed"
+        )
+      );
+
+      setPast(
+        data.filter(
+          (event) =>
+            event.status === "Completed" ||
+            event.status === "Cancelled"
+        )
+      );
+    }, {
+      order: { column: "start_time", ascending: true },
+    });
+
+    return () => unsubscribe();
   }, []);
-
-  async function fetchEvents() {
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .order("start_time", { ascending: true });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setUpcoming(
-      data.filter(
-        (event) =>
-          event.status === "Upcoming" ||
-          event.status === "Ongoing" ||
-          event.status === "Registration Closed"
-      )
-    );
-
-    setPast(
-      data.filter(
-        (event) =>
-          event.status === "Completed" ||
-          event.status === "Cancelled"
-      )
-    );
-  }
 
   function handleRegister(link: string | null) {
     if (!link || link.trim() === "") {
@@ -160,8 +151,6 @@ export default function EventsPage() {
 
   return (
     <div>
-      <Navbar />
-
       <section className="page visible" id="page-events">
         <div className="wrap events-wrap">
 
