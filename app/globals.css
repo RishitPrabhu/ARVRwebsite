@@ -90,7 +90,7 @@ nav:hover .nav-links a span,nav:focus-within .nav-links a span{display:inline}
   outline:2px solid var(--cyan);outline-offset:2px;
 }
 #menuBtn{display:none;background:none;border:1px solid var(--line);color:var(--ink);
-  border-radius:8px;padding:7px 12px;font-family:var(--mono);font-size:12px;cursor:pointer}
+  border-radius:8px;padding:8px;align-items:center;justify-content:center;cursor:pointer}
 
 /* ---------- PAGES ---------- */
 .page{display:none;min-height:100vh;padding-top:64px;animation:pageIn .45s ease}
@@ -519,6 +519,7 @@ footer{border-top:1px solid var(--line);padding:42px 0;background:var(--panel)}
     border-radius:0;background:var(--void);box-shadow:none;
   }
   .brand>div:last-child{display:block}
+  #menuBtn{margin-left:auto}
   nav:hover,nav:focus-within{width:auto;background:var(--void);box-shadow:none}
   .nav-links{
     display:none;position:fixed;top:64px;left:0;right:0;flex-direction:column;
