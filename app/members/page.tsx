@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { subscribeToTable } from "@/lib/supabase";
 
@@ -190,12 +191,9 @@ export default function MembersPage() {
                 </p>
               </div>
 
-              <a
-                className="btn btn-primary"
-                href="/join"
-              >
+              <Link className="btn btn-primary" href="/joinus">
                 Apply Now →
-              </a>
+              </Link>
             </div>
           </div>
 
